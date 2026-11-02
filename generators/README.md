@@ -10,6 +10,11 @@ probability and the sampling weight of probability one. It writes native
 `.lp` files plus a generation record, and supports `--dry-run` to preview the
 collection size. See the [workflow](../docs/paf-workflow.md) for commands.
 
+A seed is required. Every `.lp` records the master and derived instance seeds.
+The generator also writes `families.tsv` and the README's family/parameter
+table. `scripts/paf_report.py` combines those parameters with measured
+statistics to refresh both README tables and the coverage plot.
+
 This new version follows the adjacent-grid construction in the journal
 experiment repository at commit `699275f093cc4c68c688d93c8f3ac10635be3a30`,
 specifically `instance-generator/paf_grid_generator_stats.py`. It also reflects

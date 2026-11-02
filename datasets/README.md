@@ -6,11 +6,15 @@ Each collection belongs in its own directory. For newly generated PAFs:
 datasets/<collection-name>/
 ├── README.md
 ├── generation.json
+├── families.tsv
 ├── instances/
 ├── analysis/<measurement-run>/
 │   ├── index.tsv
 │   ├── summary.tsv
 │   ├── summary.md
+│   ├── report.md
+│   ├── coverage.tsv
+│   ├── coverage.png
 │   ├── run.json
 │   └── decompositions/
 └── labels/<solver-run>/

@@ -10,6 +10,7 @@ published with structural information while labels are still being computed.
 datasets/<collection>/
 ├── README.md                         # Methods, parameters, source paper, coverage plot
 ├── generation.json                   # Command, parameters, Python version, generator hash
+├── families.tsv                      # Generator parameters and seed per family
 ├── instances/
 │   ├── grid_p0p5/*.lp                 # Families; no README needed for every k or n
 │   ├── grid_p0p75/*.lp
@@ -19,6 +20,8 @@ datasets/<collection>/
 │   ├── index.tsv                     # One row per PAF, including structural measurements
 │   ├── summary.tsv                   # Counts and ranges grouped by family, k and n
 │   ├── summary.md                    # Human-readable statistics
+│   ├── report.md                     # Generated family and structural coverage tables
+│   ├── coverage.tsv                  # Structural coverage table as data
 │   ├── coverage.png                  # Size versus measured width and attack count
 │   └── decompositions/<family>/*.td   # Certificates for successful width measurements
 └── labels/<solver-run>/               # Added when the probability solver is run
@@ -85,6 +88,12 @@ and replicate. Adding more parameter combinations does not change an existing
 combination. Retain `generation.json`, the generator source revision and the
 Python version to support reproduction.
 
+The generator also writes `families.tsv` and an initial family/parameter
+table in the collection README. The master seed is mandatory; each native
+file records both that master seed and its derived instance seed. The table
+includes the actual k/n choices, grid-edge selection probability, replicate
+count and expected instance count per family.
+
 ## 2. Inventory and measure structure
 
 Basic statistics require only Python's standard library:
@@ -144,25 +153,41 @@ it is part of a published result. Width measurement can be repeated separately
 from probability labeling, and a labeling solver may use a different
 decomposition. Record that distinction in the solver-run metadata.
 
-## 3. Produce a coverage plot
+## 3. Rebuild both tables and the coverage plot
 
-Plotting is optional and uses Matplotlib. Install it in a project environment:
+`paf_report.py` reads `families.tsv` and the selected analysis index. It checks
+family counts against the native files and verifies that the analyzed PAF
+hashes still match. It produces a family/parameter table and a structural
+coverage table, including explicit width failures and unmeasured instances.
+The report can be refreshed without rerunning HTD.
+
+Plotting uses Matplotlib. Install it in a project environment:
 
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install matplotlib
-.venv/bin/python scripts/plot_paf_stats.py \
-  datasets/paf-grid-v1/analysis/htd-v1/index.tsv \
-  --output datasets/paf-grid-v1/analysis/htd-v1/coverage.png
+.venv/bin/python scripts/paf_report.py datasets/paf-grid-v1 \
+  --analysis analysis/htd-v1 --plot --update-readme
 ```
 
-Embed it in the collection README:
+This writes `report.md`, `coverage.tsv`, `report.json` and `coverage.png` in
+the analysis directory and refreshes the marked generated section of the
+collection README. You can rerun it after another analysis; authored methods,
+citations and other text outside the markers are preserved.
 
-```markdown
-![Dataset coverage](analysis/htd-v1/coverage.png)
+For tables only, use standard Python and omit `--plot`. Omit
+`--update-readme` to produce the report without changing the collection README:
 
-See [structural statistics](analysis/htd-v1/summary.md).
+```bash
+python3 scripts/paf_report.py datasets/paf-grid-v1 --analysis analysis/htd-v1
 ```
+
+`scripts/plot_paf_stats.py` remains available for standalone plotting. Its
+`--overwrite` option explicitly permits regenerating an existing figure.
+
+For imported collections, curate `families.tsv` from the documented historical
+generator settings. Missing historical seeds remain blank and appear as
+`unrecorded` in the table. They cannot be reconstructed from filenames.
 
 The useful overview is argument count versus measured decomposition width,
 colored by family, alongside argument count versus attack count. It shows

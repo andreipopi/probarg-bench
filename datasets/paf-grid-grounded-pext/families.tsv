@@ -1,0 +1,3 @@
+family	edge_probability	k_values	n_values	replicates	instance_count	master_seed	candidate_probability	certainty_weight	generator
+grid_050	0.5	2, 3, 4, 5, 6, 7	5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100	4	264		0.04	0.1	legacy-journal-grid
+grid_075	0.75	2, 3, 4, 5, 6, 7	5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100	4	264		0.04	0.1	legacy-journal-grid

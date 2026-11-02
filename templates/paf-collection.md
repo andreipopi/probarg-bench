@@ -18,6 +18,11 @@ probability distribution, candidate/query construction. Link generation.json.>
 Explain that extension(...) is the candidate and in(...)/query(...) is the
 acceptance query. State the independent constellation model.>
 
+<!-- probarg-report:start -->
+## Families and generator parameters
+
+<Generated from families.tsv by scripts/paf_report.py.>
+
 ## Structural coverage
 
 <Link the chosen analysis run's summary.md and index.tsv. State its graph
@@ -25,6 +30,7 @@ definition, width method, tool/build/seed, measurement limit, success/failure
 counts and whether widths are upper bounds or certified exact values.>
 
 ![Dataset coverage](analysis/<measurement-run>/coverage.png)
+<!-- probarg-report:end -->
 
 ## Labels
 

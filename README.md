@@ -46,6 +46,10 @@ instances, compute graph statistics and validated decomposition widths, create
 a coverage plot, and later attach exact-solver labels. The workflow uses
 standalone Python scripts, TSV indexes, and small JSON run records.
 
+The generator requires a seed and records family parameters in `families.tsv`.
+After measurement, `scripts/paf_report.py --plot --update-readme` rebuilds the
+family/parameter table, structural coverage table and figure in the dataset README.
+
 Use one README per dataset collection, with its family definitions and coverage
 figure. Keep generation, structural measurements, and solver labels as
 separate stages so unlabeled graphs remain useful and can be labeled later.

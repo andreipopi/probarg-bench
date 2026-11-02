@@ -44,44 +44,44 @@ The main predicates are:
 - `extension(a).` puts `a` in the candidate set; and
 - `in(a).` records the separate acceptance-query argument.
 
-## Families and generator parameters
+## Generator construction
 
 Both families use a shuffled `n`-by-`k` grid. The filename records the grid
 parameters and replicate, for example `k3_n20_qa24_4.lp`. The total number of
 arguments is `k * n`; `qa24` records query argument `a24`.
 
-| Family | Approximate selected grid edges | `k` | `n` | Replicates | Instances |
-| --- | ---: | --- | --- | ---: | ---: |
-| `grid_050` | 50% | 2--7 | 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 | 4 | 264 |
-| `grid_075` | 75% | 2--7 | 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 | 4 | 264 |
+The parameter `k` controls generation and is not a measured treewidth.
+`families.tsv` records the historical settings curated from the source
+generator code. The historical seeds are unavailable and remain unrecorded.
 
-The generator draws argument and attack probabilities from
-`{0.1, 0.2, ..., 1.0}` and favors uncertain values over probability one. Each
-argument is independently selected for the candidate set with probability
-0.04. The parameter `k` is a generator width control, not a measured
-treewidth. Where a result recorded the largest tree-decomposition bag, the
-index reports both `largest_bag_size` and `decomposition_width`, with
-`decomposition_width = largest_bag_size - 1`.
+<!-- probarg-report:start -->
+## Families and generator parameters
+
+| Family | Grid-edge probability | k | n | Replicates | Instances | Master seed |
+| --- | --- | --- | --- | --- | --- | --- |
+| grid_050 | 50% | 2, 3, 4, 5, 6, 7 | 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 | 4 | 264 | unrecorded |
+| grid_075 | 75% | 2, 3, 4, 5, 6, 7 | 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 | 4 | 264 | unrecorded |
+
+- `grid_050`: generator `legacy-journal-grid`; candidate inclusion probability 0.04; sampling weight of probability one 0.1 (each value 0.1–0.9 has weight 10).
+- `grid_075`: generator `legacy-journal-grid`; candidate inclusion probability 0.04; sampling weight of probability one 0.1 (each value 0.1–0.9 has weight 10).
+
+Seeds marked unrecorded are unavailable for historical instances.
 
 ## Structural coverage
 
-The [fresh structural inventory](analysis/htd-v1/summary.md) covers all 528
-instances. Widths were recomputed independently of the probability labels
-with the modified HTD binary, and all 528 decomposition certificates passed
-the vertex coverage, edge coverage, bag-tree and running-intersection checks.
+| Family | Instances | Analyzed | Arguments | Directed attacks | Weak components | Decomposition width | Valid widths | Other statuses |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| grid_050 | 264 | 264 | 10–700 | 6–880 | 1–119 | 1–4 | 264 | none |
+| grid_075 | 264 | 264 | 10–700 | 11–1314 | 1–19 | 1–7 | 264 | none |
 
-| Family | Arguments | Directed attacks | Decomposition width | Valid measurements |
-| --- | --- | --- | --- | ---: |
-| `grid_050` | 10--700 | 6--880 | 1--4 | 264/264 |
-| `grid_075` | 10--700 | 11--1314 | 1--7 | 264/264 |
+Graph: the underlying undirected graph of declared attacks, with reciprocal attacks collapsed and self-attacks omitted for width computation.
+Widths are validated decomposition upper bounds on treewidth. Ranges describe the analyzed rows; instances outside a partial analysis have no measurements in this report.
 
 ![PAF size and width coverage](analysis/htd-v1/coverage.png)
 
-The structural graph is the underlying undirected graph of all declared
-attacks; reciprocal attacks are collapsed and self-attacks are omitted for
-width computation. The measured widths are upper bounds on treewidth. See
-the [per-instance index](analysis/htd-v1/index.tsv) and
-[measurement record](analysis/htd-v1/run.json) for hashes and tool settings.
+Sources: [family parameters](families.tsv), [per-instance measurements](analysis/htd-v1/index.tsv), [measurement configuration](analysis/htd-v1/run.json).
+<!-- probarg-report:end -->
+
 The original imported index and probability labels remain the record of their
 earlier solver runs; a successful fresh width measurement does not recompute
 a previously failed probability label.

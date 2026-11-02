@@ -10,12 +10,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("index", type=Path)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--overwrite", action="store_true", help="replace an existing generated figure")
     args = parser.parse_args()
     with args.index.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle, delimiter="\t"))
     if not rows:
         parser.error("index is empty")
-    if args.output.exists():
+    if args.output.exists() and not args.overwrite:
         parser.error("output already exists")
     try:
         import matplotlib

@@ -1,9 +1,15 @@
 """Tests for seed reproducibility and rejection of invalid width certificates."""
 
 import importlib.util
+import contextlib
+import csv
+import hashlib
+import io
 from pathlib import Path
+import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,6 +24,7 @@ def load(name, relative):
 
 grid = load("paf_grid", "generators/paf_grid.py")
 stats = load("paf_stats", "scripts/paf_stats.py")
+report = load("paf_report", "scripts/paf_report.py")
 
 
 class WorkflowTests(unittest.TestCase):
@@ -76,6 +83,58 @@ class WorkflowTests(unittest.TestCase):
             path.write_text("arg(a).\np(a,10000).\n")
             with self.assertRaisesRegex(ValueError, "probability"):
                 stats.read_paf(path)
+
+    def test_generation_records_parameter_table_and_seeds(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / "collection"
+            command = ["paf_grid.py", "--output", str(output), "--k", "2", "3", "--n", "4",
+                       "--edge-probabilities", "0.5", "1", "--replicates", "2", "--seed", "123"]
+            with patch.object(sys, "argv", command), contextlib.redirect_stdout(io.StringIO()):
+                grid.main()
+            with (output / "families.tsv").open() as handle:
+                families = list(csv.DictReader(handle, delimiter="\t"))
+            self.assertEqual([r["instance_count"] for r in families], ["4", "4"])
+            self.assertTrue(all(r["master_seed"] == "123" for r in families))
+            self.assertEqual(len(list((output / "instances").rglob("*.lp"))), 8)
+            self.assertIn(report.START, (output / "README.md").read_text())
+            for path in (output / "instances").rglob("*.lp"):
+                self.assertIn("% probarg master_seed=123", path.read_text())
+                self.assertIn("% probarg seed=", path.read_text())
+
+    def test_report_distinguishes_partial_analysis_and_failed_widths(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            families = [dict(family="first", instance_count="2"), dict(family="second", instance_count="1")]
+            rows = []
+            for i, family in enumerate(("first", "first", "second")):
+                path = root / "instances" / family / f"example{i}.lp"
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("arg(a).\np(a,1).\n")
+                if i < 2:
+                    rows.append(dict(family=family, instance_path=path.relative_to(root).as_posix(),
+                                     instance_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                                     argument_count="1", attack_count="0", weak_component_count="1",
+                                     width_status="ok" if i == 0 else "timeout",
+                                     decomposition_width="0" if i == 0 else ""))
+            table = report.coverage(root, families, rows)
+            self.assertEqual(table[0]["valid_widths"], 1)
+            self.assertEqual(table[0]["other_width_statuses"], "timeout=1")
+            self.assertEqual(table[1]["instances"], 1)
+            self.assertEqual(table[1]["analyzed"], 0)
+            self.assertEqual(table[1]["decomposition_width"], "pending")
+            (root / rows[0]["instance_path"]).write_text("arg(b).\np(b,1).\n")
+            with self.assertRaisesRegex(ValueError, "hash changed"):
+                report.coverage(root, families, rows)
+
+    def test_readme_report_replacement_preserves_authored_text(self):
+        source = f"# My dataset\n\nMethods stay here.\n{report.START}\nOld report\n{report.END}\n\nCitation stays here.\n"
+        updated = report.replace_report(source, "New tables\n")
+        self.assertEqual(report.replace_report(updated, "New tables\n"), updated)
+        self.assertIn("Methods stay here.", updated)
+        self.assertIn("Citation stays here.", updated)
+        self.assertNotIn("Old report", updated)
+        with self.assertRaisesRegex(ValueError, "malformed"):
+            report.replace_report(source + report.START, "New tables\n")
 
 
 if __name__ == "__main__":

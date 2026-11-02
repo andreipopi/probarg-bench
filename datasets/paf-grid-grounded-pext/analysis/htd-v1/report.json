@@ -1,0 +1,13 @@
+{
+  "command": [
+    "scripts/paf_report.py",
+    "datasets/paf-grid-grounded-pext",
+    "--analysis",
+    "analysis/htd-v1",
+    "--plot",
+    "--update-readme"
+  ],
+  "script_sha256": "185a8df8359124774c04d8eaa417d855d9558991bf8a656f2b31ce1874fd9acc",
+  "families_sha256": "8e03b3ae0d7e3fea4054702910d5720aa6c288a2f253bbf707addac855d68f47",
+  "index_sha256": "f4b5ab150a00e15fb018d69513092211a15f8ee9185ff16096306ca388819d39"
+}
