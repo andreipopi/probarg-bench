@@ -33,8 +33,22 @@ directly comparable results.
 ```text
 datasets/     Published benchmark collections and their documentation
 generators/   Reproducible instance generators
+scripts/      Structural measurements and dataset coverage plots
+docs/         Generation, measurement, labeling, and publication workflow
+templates/    A README template for new PAF collections
 evaluation/   Optional, model-agnostic evaluation protocols and utilities
 ```
+
+## Generating a new collection
+
+Follow the [PAF workflow](docs/paf-workflow.md) to generate seeded `.lp`
+instances, compute graph statistics and validated decomposition widths, create
+a coverage plot, and later attach exact-solver labels. The workflow uses
+standalone Python scripts, TSV indexes, and small JSON run records.
+
+Use one README per dataset collection, with its family definitions and coverage
+figure. Keep generation, structural measurements, and solver labels as
+separate stages so unlabeled graphs remain useful and can be labeled later.
 
 ## Available collections
 

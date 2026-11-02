@@ -63,6 +63,29 @@ treewidth. Where a result recorded the largest tree-decomposition bag, the
 index reports both `largest_bag_size` and `decomposition_width`, with
 `decomposition_width = largest_bag_size - 1`.
 
+## Structural coverage
+
+The [fresh structural inventory](analysis/htd-v1/summary.md) covers all 528
+instances. Widths were recomputed independently of the probability labels
+with the modified HTD binary, and all 528 decomposition certificates passed
+the vertex coverage, edge coverage, bag-tree and running-intersection checks.
+
+| Family | Arguments | Directed attacks | Decomposition width | Valid measurements |
+| --- | --- | --- | --- | ---: |
+| `grid_050` | 10--700 | 6--880 | 1--4 | 264/264 |
+| `grid_075` | 10--700 | 11--1314 | 1--7 | 264/264 |
+
+![PAF size and width coverage](analysis/htd-v1/coverage.png)
+
+The structural graph is the underlying undirected graph of all declared
+attacks; reciprocal attacks are collapsed and self-attacks are omitted for
+width computation. The measured widths are upper bounds on treewidth. See
+the [per-instance index](analysis/htd-v1/index.tsv) and
+[measurement record](analysis/htd-v1/run.json) for hashes and tool settings.
+The original imported index and probability labels remain the record of their
+earlier solver runs; a successful fresh width measurement does not recompute
+a previously failed probability label.
+
 ## Reference results
 
 The labels come from the exact tree-decomposition solver `ver-td-GRD` in the
