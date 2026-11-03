@@ -5,7 +5,9 @@ import contextlib
 import csv
 import hashlib
 import io
+import json
 from pathlib import Path
+import re
 import sys
 import tempfile
 import unittest
@@ -22,12 +24,79 @@ def load(name, relative):
     return module
 
 
-grid = load("paf_grid", "generators/paf_grid.py")
+grid = load("pw24_generator", "generators/PW24-generator.py")
+pbaf = load("pw25_generator", "generators/PW25-generator.py")
 stats = load("paf_stats", "scripts/paf_stats.py")
 report = load("paf_report", "scripts/paf_report.py")
 
 
 class WorkflowTests(unittest.TestCase):
+    def test_pw25_seeds_and_native_format(self):
+        config = dict(master_seed=123, candidate_probability="1", certainty_weight=0.1,
+                      support_probability="0.5")
+        text = pbaf.render(5, 5, "1", 1, config, "source-hash")
+        self.assertEqual(text, pbaf.render(5, 5, "1", 1, config, "source-hash"))
+        self.assertNotEqual(text, pbaf.render(5, 5, "1", 2, config, "source-hash"))
+        arguments, candidate, relations, pargs, prelations, ids = set(), set(), {}, {}, {}, set()
+        for line in text.splitlines():
+            if line.startswith("%"):
+                continue
+            predicate, body = re.fullmatch(r"(arg|p|att|support|in)\(([^()]*)\)\.", line).groups()
+            values = body.split(",")
+            if predicate == "arg":
+                arguments.add(values[0])
+            elif predicate == "in":
+                candidate.add(values[0])
+            elif predicate in ("att", "support"):
+                pair = tuple(values)
+                self.assertNotIn(pair, relations)
+                relations[pair] = predicate
+            elif len(values) == 2:
+                pargs[values[0]] = int(values[1])
+            else:
+                self.assertNotIn(values[0], ids)
+                ids.add(values[0])
+                prelations[tuple(values[1:3])] = int(values[3])
+        self.assertEqual(len(arguments), 25)
+        self.assertEqual(candidate, arguments)
+        self.assertEqual(set(pargs), arguments)
+        self.assertEqual(set(prelations), set(relations))
+        self.assertTrue(all(1 <= p <= 10 for p in [*pargs.values(), *prelations.values()]))
+        self.assertEqual(set(relations.values()), {"att", "support"})
+        kinds = {}
+        for (a, b), kind in relations.items():
+            key = tuple(sorted((a, b)))
+            self.assertEqual(kinds.setdefault(key, kind), kind)
+        self.assertEqual(len(kinds), 40)  # Every neighboring pair of a 5-by-5 grid.
+        self.assertIn("% probarg formalism=PBAF", text)
+        self.assertIn("% probarg probability_scale=10", text)
+        self.assertNotIn("extension(", text)
+
+    def test_pw25_support_probability_boundaries(self):
+        for support, present, absent in (("0", "att(", "support("), ("1", "support(", "att(")):
+            config = dict(master_seed=123, candidate_probability="0", certainty_weight=0.1,
+                          support_probability=support)
+            text = pbaf.render(3, 3, "1", 1, config, "source-hash")
+            self.assertIn(present, text)
+            self.assertNotIn(absent, text)
+
+    def test_pw25_generation_records_source_and_parameters(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / "pbaf"
+            command = ["PW25-generator.py", "--output", str(output), "--k", "2", "--n", "3",
+                       "--replicates", "2", "--seed", "123"]
+            with patch.object(sys, "argv", command), contextlib.redirect_stdout(io.StringIO()):
+                pbaf.main()
+            record = json.loads((output / "generation.json").read_text())
+            self.assertEqual(record["source_doi"], "10.1145/3672608.3707819")
+            self.assertEqual(record["formalism"], "PBAF")
+            self.assertEqual(record["probability_scale"], 10)
+            self.assertEqual(len(list((output / "instances").rglob("*.lp"))), 2)
+            families = report.read_table(output / "families.tsv")
+            self.assertEqual(families[0]["master_seed"], "123")
+            self.assertEqual(families[0]["support_probability"], "0.1")
+            self.assertIn("SAC 2025", (output / "README.md").read_text())
+
     def test_seed_reproduces_native_files(self):
         config = dict(master_seed=123, candidate_probability="0.04", certainty_weight=0.1)
         a = grid.render(3, 4, "0.75", 1, config, "source-hash")
@@ -87,7 +156,7 @@ class WorkflowTests(unittest.TestCase):
     def test_generation_records_parameter_table_and_seeds(self):
         with tempfile.TemporaryDirectory() as folder:
             output = Path(folder) / "collection"
-            command = ["paf_grid.py", "--output", str(output), "--k", "2", "3", "--n", "4",
+            command = ["PW24-generator.py", "--output", str(output), "--k", "2", "3", "--n", "4",
                        "--edge-probabilities", "0.5", "1", "--replicates", "2", "--seed", "123"]
             with patch.object(sys, "argv", command), contextlib.redirect_stdout(io.StringIO()):
                 grid.main()

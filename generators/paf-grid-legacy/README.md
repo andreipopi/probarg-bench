@@ -5,7 +5,7 @@ These files are preserved from `paf-ver-acc-journal-experiments` commit
 instances in [`paf-grid-grounded-pext`](../../datasets/paf-grid-grounded-pext/)
 were constructed.
 
-They are provenance artifacts, not yet a polished generator API:
+These copies document the original generator settings:
 
 - randomness is not seeded;
 - output directories and density settings are hard-coded;
@@ -17,9 +17,9 @@ They are provenance artifacts, not yet a polished generator API:
 `paf_grid_generator_stats.py` is the captured 50% configuration. Its comments
 record the corresponding 75% choice. `praaf_grid_generator.py` is the captured
 connected-grid variant, retained because it belongs to the same generator
-lineage; the connected family is not part of the current labeled collection.
+lineage; the connected family is not part of the current labeled dataset.
 
-A future curated generator should expose the family, `k`, `n`, replicate, and
-seed explicitly and write an accompanying manifest. It must be introduced as a
-new generator version rather than presented as capable of recreating the
-historical files byte-for-byte.
+For new datasets, use [`PW24-generator.py`](../PW24-generator.py). It accepts the grid
+parameters, edge probability, replicate count and seed, and saves those
+settings. The historical files have no recorded seeds, so they cannot be
+recreated byte-for-byte with that generator.

@@ -1,9 +1,9 @@
-# Dataset collections
+# Datasets
 
-Each collection belongs in its own directory. For newly generated PAFs:
+Each dataset has its own directory. For newly generated PAFs:
 
 ```text
-datasets/<collection-name>/
+datasets/<dataset-name>/
 ├── README.md
 ├── generation.json
 ├── families.tsv
@@ -22,26 +22,32 @@ datasets/<collection-name>/
     └── run.json
 ```
 
-The native instance files are authoritative. A structural `index.tsv`
-associates stable instance identifiers and hashes with generator parameters
-and graph measurements. Labels join to it by instance ID and SHA-256.
-The existing imported collection retains its original combined `index.tsv`;
-new measurements do not overwrite that historical index.
+The `.lp` files contain the PAFs. `index.tsv` is a table with one row per
+instance, giving its name, generator parameters, and graph measurements.
+TSV means tab-separated values: columns are separated by tabs rather than
+commas. A spreadsheet program or text editor can open these files.
 
-Collections are not required to define machine-learning train, validation, or
-test splits.
+`generation.json` saves the generation settings, including the seed and
+command. Each `run.json` saves the settings for a width measurement or solver
+run. JSON stores named values in a text file; these files are written by the
+scripts so the computations can be repeated.
 
-An index must distinguish a usable result from a timeout, invalid tree
-decomposition, or other failed run. When a solver emitted an exact rational,
-the numerator and denominator should be retained rather than only a rounded
-decimal rendering.
+The labels table records solver answers. It uses the same instance names and
+SHA-256 hashes as the graph table. A hash is a fingerprint of a file's
+contents, used here to check that an answer refers to the same PAF file.
+Failed or timed-out computations have a status and a blank answer, rather
+than an answer of zero. Exact fractions are kept when available.
 
-Use one collection README to explain all families and embed its generated
-coverage plot. The [PAF workflow](../docs/paf-workflow.md) contains the commands,
-metadata conventions and source-script audit; a [README template](../templates/paf-collection.md)
-is available for new collections.
+The imported dataset retains its original combined `index.tsv`; later
+measurements are stored under `analysis/`.
 
-Current collection:
+Users choose their own training, validation, and test splits.
 
-- [`paf-grid-grounded-pext`](paf-grid-grounded-pext/): 528 native PAFs and 448
-  usable grounded-extension-verification labels.
+Use one dataset README to explain its families and show its tables and plots.
+See the [PAF guide](../docs/paf-workflow.md) for commands and the
+[README template](../templates/paf-collection.md) for a starting point.
+
+Current dataset:
+
+- [`paf-grid-grounded-pext`](paf-grid-grounded-pext/): 528 PAFs and 448
+  grounded-extension-verification answers.

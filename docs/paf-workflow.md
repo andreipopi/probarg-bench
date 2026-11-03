@@ -1,13 +1,13 @@
-# Generating and publishing a PAF collection
+# Generating and publishing a PAF dataset
 
-The workflow has four steps: generate native PAFs, inventory their structure,
-measure decomposition widths, then compute solver labels. A collection can be
-published with structural information while labels are still being computed.
+The steps are to generate PAFs, compute graph statistics and decomposition
+widths, then run the probability solvers to obtain answers (labels). A dataset
+can be published with its graph statistics while labels are still being computed.
 
 ## A small folder structure
 
 ```text
-datasets/<collection>/
+datasets/<dataset>/
 ├── README.md                         # Methods, parameters, source paper, coverage plot
 ├── generation.json                   # Command, parameters, Python version, generator hash
 ├── families.tsv                      # Generator parameters and seed per family
@@ -29,12 +29,17 @@ datasets/<collection>/
     └── results.tsv
 ```
 
-Use one README per collection. Explain its families together there. Add a
+The `.tsv` files are plain-text tables with columns separated by tabs. They
+can be opened in a text editor or spreadsheet program. The `.json` files save
+settings such as the seed, parameters and command used for a computation.
+The scripts write these files automatically so the computation can be repeated.
+
+Use one README per dataset. Explain its families together there. Add a
 family README only when that family has a different generation method,
-format, provenance or task that needs its own explanation. There is no need
-for a README in every size or width directory. Link the collection's
+format, source or task that needs its own explanation. There is no need
+for a README in every size or width directory. Link the dataset's
 statistics and embed its coverage plot in its README; keep the repository's
-top-level README as the catalog of collections.
+top-level README as the list of available datasets.
 
 The native files contain the graph, candidate extension and query argument.
 Newly generated files also record generation parameters and seeds in `%`
@@ -56,17 +61,18 @@ measured coverage before deciding whether more instances are needed.
 Preview the count:
 
 ```bash
-python3 generators/paf_grid.py --output datasets/paf-grid-v1 \
+python3 generators/PW24-generator.py --output datasets/paf-grid-v1 \
   --k 2 3 4 5 6 7 --n 5 10 20 30 40 50 60 70 80 90 100 \
   --edge-probabilities 0.5 0.75 1 --replicates 4 --seed 20261103 --dry-run
 ```
 
 This specifies 792 PAFs. Remove `--dry-run` when the chosen grid is ready.
 Start with a smaller pilot to check widths and solver compatibility before
-generating the complete collection. The generator refuses an existing output
-directory, so a new run gets its own collection name.
+generating the complete dataset. The generator refuses an existing output
+directory, so a new run gets its own dataset name.
 
-The implementation follows the journal grid-construction distribution:
+`PW24-generator.py` follows the adjacent-grid construction from the KR 2024
+PAF-TD generator, with density options used in the later journal experiments:
 
 - shuffle argument names onto an `n`-by-`k` grid;
 - independently retain each undirected grid-neighbor pair with the selected
@@ -89,12 +95,12 @@ combination. Retain `generation.json`, the generator source revision and the
 Python version to support reproduction.
 
 The generator also writes `families.tsv` and an initial family/parameter
-table in the collection README. The master seed is mandatory; each native
+table in the dataset README. The master seed is mandatory; each native
 file records both that master seed and its derived instance seed. The table
 includes the actual k/n choices, grid-edge selection probability, replicate
 count and expected instance count per family.
 
-## 2. Inventory and measure structure
+## 2. Compute graph statistics and widths
 
 Basic statistics require only Python's standard library:
 
@@ -172,11 +178,11 @@ python3 -m venv .venv
 
 This writes `report.md`, `coverage.tsv`, `report.json` and `coverage.png` in
 the analysis directory and refreshes the marked generated section of the
-collection README. You can rerun it after another analysis; authored methods,
+dataset README. You can rerun it after another analysis; methods,
 citations and other text outside the markers are preserved.
 
 For tables only, use standard Python and omit `--plot`. Omit
-`--update-readme` to produce the report without changing the collection README:
+`--update-readme` to produce the report without changing the dataset README:
 
 ```bash
 python3 scripts/paf_report.py datasets/paf-grid-v1 --analysis analysis/htd-v1
@@ -185,13 +191,13 @@ python3 scripts/paf_report.py datasets/paf-grid-v1 --analysis analysis/htd-v1
 `scripts/plot_paf_stats.py` remains available for standalone plotting. Its
 `--overwrite` option explicitly permits regenerating an existing figure.
 
-For imported collections, curate `families.tsv` from the documented historical
-generator settings. Missing historical seeds remain blank and appear as
+For imported datasets, fill in `families.tsv` from the settings used by the
+original generator. Missing historical seeds remain blank and appear as
 `unrecorded` in the table. They cannot be reconstructed from filenames.
 
 The useful overview is argument count versus measured decomposition width,
 colored by family, alongside argument count versus attack count. It shows
-what instances the collection covers. A drawing of one PAF can additionally
+what instances the dataset covers. A drawing of one PAF can additionally
 explain the format, but does not replace the coverage statistics.
 
 ## 4. Add labels from the exact algorithms
@@ -227,7 +233,7 @@ probability-solver code stays in its research repository.
 
 | Source | Useful part | Treatment here |
 | --- | --- | --- |
-| Journal `instance-generator/paf_grid_generator_stats.py` | Grid edges, orientations, probability distribution, candidate sampling | New seeded `generators/paf_grid.py` follows this construction |
+| KR 2024 `paf-td/InstanceGenerator/praaf_grid_generator_dense.py` and journal `instance-generator/paf_grid_generator_stats.py` | Grid edges, orientations, probability distribution, candidate sampling | Seeded `generators/PW24-generator.py` follows this construction |
 | Desktop `InstanceGenerator/praaf_grid_generator_dense.py` | Related dense/connected grid construction | Consulted to distinguish generator variants |
 | Desktop `InstanceGenerator/call_generator.py` | Historical k/n/replicate ranges | Replaced by explicit CLI parameters and a count preview |
 | Desktop `count_unattacked.py` and `check_connectedness.py` | Unattacked-argument counts | Incorporated in `paf_stats.py`; actual weak connectivity is also computed |
@@ -240,6 +246,6 @@ several generations of experiments, so directory names alone should not be
 used as a publication citation. Record the specific source files and their
 hashes when adopting an additional generator or result set.
 
-Before a versioned release, complete the collection README, confirm its source
+Before a release, complete the dataset README, confirm its source
 publication and license, inspect coverage and failure counts, and retain the
 native-file hashes with the labels. The scripts do not publish or upload data.

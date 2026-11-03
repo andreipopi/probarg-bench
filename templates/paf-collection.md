@@ -1,8 +1,8 @@
-# <Collection name>
+# <Dataset name>
 
 <One paragraph stating formalism, generator family, intended tasks and status.>
 
-## Provenance
+## Where the data comes from
 
 <Publication citation/DOI, source repository and commit, generator version,
 and whether these are original or newly generated instances.>
@@ -44,4 +44,4 @@ uncertainty about exact numeric representations.>
 
 ## License and citation
 
-<Dataset license and citation for this collection and its source publication.>
+<Dataset license and citation for this dataset and its source publication.>

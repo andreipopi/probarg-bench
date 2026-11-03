@@ -1,12 +1,12 @@
 # PAF grid benchmark for grounded extension verification
 
-This provisional collection contains probabilistic argumentation frameworks
+This draft dataset contains probabilistic argumentation frameworks
 (PAFs) generated from shuffled grids and reference results for probabilistic
 extension verification under grounded semantics.
 
-It is an audited import of existing research artifacts. It is not the KR 2024
-PAF-TD collection: the latter uses a related generator lineage but will be
-curated independently.
+The instances and answers were imported from existing experiments and checked
+for consistency. The KR 2024 PAF-TD dataset uses related generators and will
+be added separately.
 
 ## Contents
 
@@ -19,10 +19,10 @@ paf-grid-grounded-pext/
     └── grid_075/
 ```
 
-The `.lp` files are the authoritative instances. `index.tsv` contains one row
-per instance, including reference-result status, labels when available,
-structural metadata, provenance, and the instance SHA-256 digest. No machine-
-learning train, validation, or test split is prescribed.
+The `.lp` files contain the PAFs. `index.tsv` is a plain-text table with columns
+separated by tabs and one row per instance. It includes the solver status,
+answer when available, graph statistics, source, and SHA-256 file hash.
+Users choose their own training, validation, and test splits.
 
 ## Task
 
@@ -51,7 +51,7 @@ parameters and replicate, for example `k3_n20_qa24_4.lp`. The total number of
 arguments is `k * n`; `qa24` records query argument `a24`.
 
 The parameter `k` controls generation and is not a measured treewidth.
-`families.tsv` records the historical settings curated from the source
+`families.tsv` records the historical settings taken from the source
 generator code. The historical seeds are unavailable and remain unrecorded.
 
 <!-- probarg-report:start -->
@@ -118,7 +118,7 @@ for both representations.
 
 Only rows with `label_status = result` have usable labels.
 
-## Provenance and audit
+## Sources and checks
 
 The instances and solver outputs originate from
 [`paf-ver-acc-journal-experiments`](https://gitlab.tugraz.at/krr/paf-ver-acc-journal-experiments)
@@ -139,7 +139,7 @@ commit `78110af0a5122e528bf3fca71e0bb59dedf683d9`.
 
 The fine-tuning repository's rendered prompts and its train/validation/test
 splits are deliberately not included here. They are downstream ML choices, not
-properties of this benchmark collection.
+properties of this dataset.
 
 ## Known limitations before a stable release
 
