@@ -19,7 +19,8 @@ record the corresponding 75% choice. `praaf_grid_generator.py` is the captured
 connected-grid variant, retained because it belongs to the same generator
 lineage; the connected family is not part of the current labeled dataset.
 
-For new datasets, use [`PW24-generator.py`](../PW24-generator.py). It accepts the grid
-parameters, edge probability, replicate count and seed, and saves those
-settings. The historical files have no recorded seeds, so they cannot be
-recreated byte-for-byte with that generator.
+[`PW24-generator.py`](../PW24-generator.py) now contains the original KR 2024
+dense generator, with all its functions unchanged and an added seeded runner.
+Its direction choices are fixed at the original values; it does not combine
+these later journal density variants. The historical files here have no
+recorded seeds, so those particular instances cannot be recreated from a seed.

@@ -4,7 +4,8 @@ ProbArgBench is an open benchmark collection for probabilistic argumentation.
 It publishes graph instances in their native formats, the generators that
 produce them, and reference labels produced by exact solvers.
 
-The provided generators are adapted from the code accompanying these papers:
+The provided generators retain the original functions from the code
+accompanying these papers:
 
 - **PAFs — [`PW24-generator.py`](generators/PW24-generator.py):**
 
@@ -18,8 +19,10 @@ The provided generators are adapted from the code accompanying these papers:
   > Probabilistic Bipolar Argumentation Frameworks*. SAC 2025, pp. 1051–1052.
   > [https://doi.org/10.1145/3672608.3707819](https://doi.org/10.1145/3672608.3707819)
 
-Both scripts require a seed and save the generation settings. Their parameters
-and adaptations are explained in [generators/README.md](generators/README.md).
+Both scripts keep the original random choices, parameters, filenames and file
+writers. Added code sets the seed and saves dataset information around those
+functions. Unchanged source copies and comparisons are explained in
+[generators/README.md](generators/README.md).
 
 ## Scope
 
@@ -56,7 +59,7 @@ evaluation/   Separate space for scoring model predictions
 
 The [PAF guide](docs/paf-workflow.md) gives the commands for these steps:
 
-1. Choose the graph sizes, edge probabilities, number of instances, and seed.
+1. Choose the graph sizes, number of instances, and seed.
 2. Generate the `.lp` files.
 3. Compute graph statistics and decomposition widths.
 4. Generate the family/parameter table, structural coverage table, and plots
@@ -87,6 +90,9 @@ and report scripts support PAFs; their PBAF extension is still to be added.
 The scripts write these tables and settings files automatically. They keep
 the information needed to repeat a computation and match an answer to the
 correct instance.
+
+The PAF generator also preserves the original integer-scaled solver inputs
+under `instances_asp/`. These are alternate encodings of the same instances.
 
 ## Available datasets
 

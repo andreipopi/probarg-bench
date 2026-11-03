@@ -6,8 +6,10 @@ Each dataset has its own directory. For newly generated PAFs:
 datasets/<dataset-name>/
 ├── README.md
 ├── generation.json
+├── generation.tsv
 ├── families.tsv
 ├── instances/
+├── instances_asp/                     # Original alternate PAF encoding
 ├── analysis/<measurement-run>/
 │   ├── index.tsv
 │   ├── summary.tsv
@@ -31,6 +33,11 @@ commas. A spreadsheet program or text editor can open these files.
 command. Each `run.json` saves the settings for a width measurement or solver
 run. JSON stores named values in a text file; these files are written by the
 scripts so the computations can be repeated.
+
+`generation.tsv` saves the seed and file hash for each generated instance.
+It also saves the hash of the original file body before generation comments
+were added. The original PW24 generator's alternate integer-scaled files are
+kept under `instances_asp/`; they are the same examples in another encoding.
 
 The labels table records solver answers. It uses the same instance names and
 SHA-256 hashes as the graph table. A hash is a fingerprint of a file's

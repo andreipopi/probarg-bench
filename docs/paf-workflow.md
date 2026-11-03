@@ -10,11 +10,12 @@ can be published with its graph statistics while labels are still being computed
 datasets/<dataset>/
 ├── README.md                         # Methods, parameters, source paper, coverage plot
 ├── generation.json                   # Command, parameters, Python version, generator hash
+├── generation.tsv                    # Per-instance seeds and file hashes
 ├── families.tsv                      # Generator parameters and seed per family
 ├── instances/
-│   ├── grid_p0p5/*.lp                 # Families; no README needed for every k or n
-│   ├── grid_p0p75/*.lp
-│   └── grid_p1/*.lp
+│   └── grid_075/*.lp                  # Original dense PW24 generator
+├── instances_asp/
+│   └── grid_075/*.lp                  # Same PAFs, original scaled-integer encoding
 ├── analysis/<measurement-run>/
 │   ├── run.json                      # Width tool, binary hash, command, time limit
 │   ├── index.tsv                     # One row per PAF, including structural measurements
@@ -42,8 +43,11 @@ statistics and embed its coverage plot in its README; keep the repository's
 top-level README as the list of available datasets.
 
 The native files contain the graph, candidate extension and query argument.
-Newly generated files also record generation parameters and seeds in `%`
-comments, which the existing native format permits. Derived structural
+Every original generator function is preserved without changes. Added code
+sets the seed before calling those functions and prepends generation settings
+as `%` comments to the output. The native body, facts, ordering and filenames
+are unchanged. `generation.tsv` records both full-file and original-body hashes.
+Derived structural
 measurements belong to the corresponding index row. This associates a width
 with every instance while allowing a better decomposition to be measured
 without rewriting that instance or invalidating its label hash.
@@ -63,33 +67,39 @@ Preview the count:
 ```bash
 python3 generators/PW24-generator.py --output datasets/paf-grid-v1 \
   --k 2 3 4 5 6 7 --n 5 10 20 30 40 50 60 70 80 90 100 \
-  --edge-probabilities 0.5 0.75 1 --replicates 4 --seed 20261103 --dry-run
+  --replicates 4 --seed 20261103 --dry-run
 ```
 
-This specifies 792 PAFs. Remove `--dry-run` when the chosen grid is ready.
+This specifies 264 PAFs, plus their alternate ASP encodings. Remove `--dry-run`
+when the chosen grid is ready.
 Start with a smaller pilot to check widths and solver compatibility before
 generating the complete dataset. The generator refuses an existing output
 directory, so a new run gets its own dataset name.
 
-`PW24-generator.py` follows the adjacent-grid construction from the KR 2024
-PAF-TD generator, with density options used in the later journal experiments:
+`PW24-generator.py` contains the original dense generator from KR 2024 PAF-TD.
+Its functions keep the original choices:
 
 - shuffle argument names onto an `n`-by-`k` grid;
-- independently retain each undirected grid-neighbor pair with the selected
-  edge probability;
-- for a retained pair, choose either orientation or both with equal probability;
+- for each undirected grid-neighbor pair, use the original four-way sample:
+  no relation, one direction, the other direction, or both;
 - draw each argument and directed-attack probability from `{0.1, ..., 1.0}`
   with weight 10 for each uncertain value and weight 0.1 for probability one;
 - include each argument in the candidate set independently with probability
   0.04; and
 - choose one acceptance-query argument uniformly from the arguments.
 
-The candidate probability and the weight of probability one are explicit CLI
-options. This is a new generator version: it produces new seeded instances
-and does not recreate historical files. The sparse long-range generator from
-PAF-TD is a different method and needs a separate version when added.
+Only `k`, `n`, replicate count, master seed and output directory are command-
+line options. Density, candidate probability and probability weights stay at
+the original values. The original sparse long-range and later journal
+variants are separate generators and are not combined with this one.
 
-The master seed deterministically produces a seed for each parameter tuple
+Unchanged copies of both paper generators are kept under
+[`generators/originals/`](../generators/originals/). Tests compare their source
+functions, native output bytes, filenames and final random states against the
+seeded runner. Historical datasets still cannot be recreated without their
+original seeds.
+
+The added runner uses the master seed to produce a seed for each parameter tuple
 and replicate. Adding more parameter combinations does not change an existing
 combination. Retain `generation.json`, the generator source revision and the
 Python version to support reproduction.
@@ -98,7 +108,9 @@ The generator also writes `families.tsv` and an initial family/parameter
 table in the dataset README. The master seed is mandatory; each native
 file records both that master seed and its derived instance seed. The table
 includes the actual k/n choices, grid-edge selection probability, replicate
-count and expected instance count per family.
+count and expected instance count per family. The PAF candidate is encoded by
+`extension(...)`; its query is encoded by the original `query(...)` fact.
+The ASP copies contain the same instances with probabilities scaled by 10000.
 
 ## 2. Compute graph statistics and widths
 
@@ -233,7 +245,9 @@ probability-solver code stays in its research repository.
 
 | Source | Useful part | Treatment here |
 | --- | --- | --- |
-| KR 2024 `paf-td/InstanceGenerator/praaf_grid_generator_dense.py` and journal `instance-generator/paf_grid_generator_stats.py` | Grid edges, orientations, probability distribution, candidate sampling | Seeded `generators/PW24-generator.py` follows this construction |
+| KR 2024 `paf-td/InstanceGenerator/praaf_grid_generator_dense.py` | Complete original dense generator, including its writers | All functions copied unchanged into `PW24-generator.py`; only the top-level runner is replaced |
+| SAC 2025 `pbaf-td/InstanceGenerator/pbaf_grid_generator.py` | Complete original PBAF generator, including its writer | All functions copied unchanged into `PW25-generator.py`; only the top-level runner is replaced |
+| Journal `instance-generator/paf_grid_generator_stats.py` | The imported dataset's historical settings | Retained separately in `paf-grid-legacy/`; not merged into the paper generators |
 | Desktop `InstanceGenerator/praaf_grid_generator_dense.py` | Related dense/connected grid construction | Consulted to distinguish generator variants |
 | Desktop `InstanceGenerator/call_generator.py` | Historical k/n/replicate ranges | Replaced by explicit CLI parameters and a count preview |
 | Desktop `count_unattacked.py` and `check_connectedness.py` | Unattacked-argument counts | Incorporated in `paf_stats.py`; actual weak connectivity is also computed |
