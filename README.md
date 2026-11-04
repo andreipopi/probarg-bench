@@ -50,14 +50,14 @@ scoring model predictions can be added separately under `evaluation/`.
 datasets/     Instance files, solver answers, statistics, and dataset READMEs
 generators/   Scripts for generating new instances
 scripts/      Scripts for measuring graphs and producing tables and plots
-docs/         Instructions for generating, measuring, and labeling datasets
 templates/    A README template for new datasets
 evaluation/   Separate space for scoring model predictions
 ```
 
 ## Generating a new PAF dataset
 
-The [PAF guide](docs/paf-workflow.md) gives the commands for these steps:
+See the [generator README](generators/README.md) for generation commands and
+the [scripts README](scripts/README.md) for measurements, tables and plots:
 
 1. Choose the graph sizes, number of instances, and seed.
 2. Generate the `.lp` files.

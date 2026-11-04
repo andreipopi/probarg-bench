@@ -25,7 +25,7 @@ selection probability 0.04 are unchanged. No extra density, candidate or
 probability-weight options are introduced.
 
 The added runner accepts `--k`, `--n`, `--replicates`, `--seed` and `--output`.
-Use `--dry-run` to preview the count. See the [PAF guide](../docs/paf-workflow.md).
+Use `--dry-run` to preview the count.
 
 Source: `paf-td/InstanceGenerator/praaf_grid_generator_dense.py`, commit
 `df7961a39dc666610298d7d2539ee2a8da315508`. The source file's SHA-256 is
@@ -72,6 +72,26 @@ The imported journal PAF dataset uses `in(...)` for its query instead.
 measurements, report generation, and labels will be added separately.
 
 ## Added dataset code
+
+Run these commands from the repository root. For example, to generate 16 PAFs:
+
+```bash
+python3 generators/PW24-generator.py --output datasets/paf-pw24-v1 \
+  --k 2 3 --n 5 10 --replicates 4 --seed 20261103
+```
+
+`k * n` is the number of arguments. Four instances are generated for each
+`k, n` pair. Change these values to choose the size range and instance count.
+Add `--dry-run` to preview the count without writing files. Use a new output
+directory for a new dataset.
+
+The master seed produces a recorded seed for each parameter pair and replicate.
+Adding more sizes does not change the instances for an existing combination.
+The original functions are called with that instance seed. Historical datasets
+cannot be recreated without their original seeds.
+
+After generation, use the [measurement and reporting scripts](../scripts/README.md).
+Instructions for adding solver answers are in the [dataset README](../datasets/README.md).
 
 [`dataset_support.py`](dataset_support.py) contains the added code. It calls
 the original functions in the original order, in a temporary working folder

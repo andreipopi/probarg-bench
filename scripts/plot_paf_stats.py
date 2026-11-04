@@ -24,7 +24,7 @@ def main():
         import matplotlib.pyplot as plt
         from matplotlib.ticker import MaxNLocator
     except ImportError:
-        parser.error("plotting requires matplotlib; see docs/paf-workflow.md")
+        parser.error("plotting requires matplotlib; see scripts/README.md")
     fig, axes = plt.subplots(1, 2, figsize=(11, 4), constrained_layout=True)
     families = sorted({row["family"] for row in rows})
     measured = 0
