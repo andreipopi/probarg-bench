@@ -1,0 +1,13 @@
+{
+  "command": [
+    "scripts/paf_report.py",
+    "datasets/paf-pw24-pilot-v1",
+    "--analysis",
+    "analysis/htd-v1",
+    "--plot",
+    "--update-readme"
+  ],
+  "script_sha256": "494891f5456886157e9c8208b8340f777b2d486300e19ed964e79e012dce93cd",
+  "families_sha256": "928fcb4e6e612386e9a2a5f9528525145cd2c782e983f9a4aaa97b661b50fd19",
+  "index_sha256": "94436af2af02812bc45b907c8b1c1107fb2cc2a4861a5de906acd118bd2ab683"
+}
