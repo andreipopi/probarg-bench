@@ -1,22 +1,28 @@
 # Dataset report
 
-## Families and generator parameters
+## Generator parameters
 
-| Family | Grid-edge probability | k | n | Replicates | Instances | Master seed |
-| --- | --- | --- | --- | --- | --- | --- |
-| grid_075 | 75% | 2, 3, 4, 5, 6 | 2, 3, 5, 10, 15, 20 | 10 | 300 | 20261105 |
+| k | n | Replicates | Grid connection probability |
+| --- | --- | --- | --- |
+| 2, 3, 4, 5, 6 | 2, 3, 5, 10, 15, 20 | 10 | 75% |
 
-- `grid_075`: generator `PW24-original-dense-v1`; candidate inclusion probability 0.04; sampling weight of probability one 0.1 (each value 0.1–0.9 has weight 10).
+Each PAF has `k × n` arguments; replicates are instances per `(k, n)` pair.
+A grid connection means at least one attack between neighbouring vertices.
 
-## Structural coverage
+## Dataset summary
 
-| Family | Instances | Analyzed | Arguments | Directed attacks | Weak components | Decomposition width | Valid widths | Other statuses |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| grid_075 | 300 | 300 | 4–120 | 3–236 | 1–7 | 1–5 | 300 | none |
+| Instances | Arguments | Attacks | Candidate size | Width upper bound |
+| --- | --- | --- | --- | --- |
+| 300 | 4–120 | 3–236 | 0–8 | 1–5 |
 
-Graph: the underlying undirected graph of declared attacks, with reciprocal attacks collapsed and self-attacks omitted for width computation.
-Widths are validated decomposition upper bounds on treewidth. Ranges describe the analyzed rows; instances outside a partial analysis have no measurements in this report.
+Attacks are directed. Widths are validated upper bounds on treewidth of the undirected attack graph.
 
-![PAF size and width coverage](analysis_coverage.png)
+All 300 instances analysed successfully.
 
-Sources: [family parameters](../../families_parameters.tsv), [per-instance measurements](analysis_instances.tsv), [measurement configuration](analysis_settings.json).
+Empty candidate sets: 114/300 (38%).
+
+![PAF size and width distribution](analysis_coverage.png)
+
+Circle area represents the number of instances at each size and width.
+
+Details: [generator settings](../../families_parameters.tsv) · [measurements](analysis_instances.tsv) · [analysis settings](analysis_settings.json).
