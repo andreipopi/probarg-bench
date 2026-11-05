@@ -10,7 +10,7 @@ and whether these are original or newly generated instances.>
 ## Generation
 
 <Command and parameter grid: k, n, edge selection, replicates, seeds,
-probability distribution, candidate/query construction. Link generation.json.>
+probability distribution, candidate/query construction. Link generation_settings.json.>
 
 ## Instances and format
 
@@ -21,15 +21,15 @@ acceptance query. State the independent constellation model.>
 <!-- probarg-report:start -->
 ## Families and generator parameters
 
-<Generated from families.tsv by scripts/paf_report.py.>
+<Generated from families_parameters.tsv by scripts/paf_report.py.>
 
 ## Structural coverage
 
-<Link the chosen analysis run's summary.md and index.tsv. State its graph
+<Link the chosen analysis run's analysis_summary.md and analysis_instances.tsv. State its graph
 definition, width method, tool/build/seed, measurement limit, success/failure
 counts and whether widths are upper bounds or certified exact values.>
 
-![Dataset coverage](analysis/<measurement-run>/coverage.png)
+![Dataset coverage](analysis/<measurement-run>/analysis_coverage.png)
 <!-- probarg-report:end -->
 
 ## Labels

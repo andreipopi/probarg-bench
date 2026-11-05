@@ -38,12 +38,12 @@ def coverage(collection, families, rows):
     """Check input identity, then aggregate measured rows without hiding failures."""
     declared = {row["family"]: row for row in families}
     if len(declared) != len(families):
-        raise ValueError("duplicate family in families.tsv")
+        raise ValueError("duplicate family in families_parameters.tsv")
     paths = {path.relative_to(collection).as_posix(): path
              for path in (collection / "instances").rglob("*.lp")}
     actual = Counter(Path(relative).parts[1] for relative in paths)
     if set(actual) != set(declared):
-        raise ValueError("families.tsv does not describe exactly the instance families")
+        raise ValueError("families_parameters.tsv does not describe exactly the instance families")
     for family, row in declared.items():
         if int(row["instance_count"]) != actual[family]:
             raise ValueError(f"{family}: declared instance count disagrees with native files")
@@ -100,9 +100,9 @@ def report_text(families, structural, relative_analysis, has_plot):
                  "Graph: the underlying undirected graph of declared attacks, with reciprocal attacks collapsed and self-attacks omitted for width computation.",
                  "Widths are validated decomposition upper bounds on treewidth. Ranges describe the analyzed rows; instances outside a partial analysis have no measurements in this report.", ""]
     if has_plot:
-        sections += [f"![PAF size and width coverage]({relative_analysis}/coverage.png)", ""]
-    sections += [f"Sources: [family parameters](families.tsv), [per-instance measurements]({relative_analysis}/index.tsv), "
-                 f"[measurement configuration]({relative_analysis}/run.json).", ""]
+        sections += [f"![PAF size and width coverage]({relative_analysis}/analysis_coverage.png)", ""]
+    sections += [f"Sources: [family parameters](families_parameters.tsv), [per-instance measurements]({relative_analysis}/analysis_instances.tsv), "
+                 f"[measurement configuration]({relative_analysis}/analysis_settings.json).", ""]
     return "\n".join(sections)
 
 
@@ -120,14 +120,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("collection", type=Path)
     parser.add_argument("--analysis", required=True, type=Path, help="analysis directory relative to the collection")
-    parser.add_argument("--plot", action="store_true", help="regenerate coverage.png using Matplotlib")
+    parser.add_argument("--plot", action="store_true", help="regenerate analysis_coverage.png using Matplotlib")
     parser.add_argument("--update-readme", action="store_true", help="refresh only the marked generated section")
     args = parser.parse_args()
     collection = args.collection.resolve()
     analysis = (collection / args.analysis).resolve()
     try:
         relative = analysis.relative_to(collection).as_posix()
-        families_path, index_path = collection / "families.tsv", analysis / "index.tsv"
+        families_path, index_path = collection / "families_parameters.tsv", analysis / "analysis_instances.tsv"
         families, rows = read_table(families_path), read_table(index_path)
         if not families or not rows:
             raise ValueError("family parameters and analysis index must both contain rows")
@@ -137,20 +137,20 @@ def main():
             replace_report(readme, "")  # Check markers before writing anything.
         if args.plot:
             subprocess.run([sys.executable, str(Path(__file__).with_name("plot_paf_stats.py")),
-                            str(index_path), "--output", str(analysis / "coverage.png"), "--overwrite"], check=True)
-        text = report_text(families, structural, relative, (analysis / "coverage.png").exists())
-        # report.md is in the analysis directory, so its relative links need that base.
-        report = text.replace("](families.tsv)", f"]({Path('../' * len(Path(relative).parts)).as_posix()}/families.tsv)")
+                            str(index_path), "--output", str(analysis / "analysis_coverage.png"), "--overwrite"], check=True)
+        text = report_text(families, structural, relative, (analysis / "analysis_coverage.png").exists())
+        # analysis_report.md is in the analysis directory, so its relative links need that base.
+        report = text.replace("](families_parameters.tsv)", f"]({Path('../' * len(Path(relative).parts)).as_posix()}/families_parameters.tsv)")
         report = report.replace(f"]({relative}/", "](")
-        (analysis / "report.md").write_text("# Dataset report\n\n" + report, encoding="utf-8")
-        with (analysis / "coverage.tsv").open("w", encoding="utf-8", newline="") as handle:
+        (analysis / "analysis_report.md").write_text("# Dataset report\n\n" + report, encoding="utf-8")
+        with (analysis / "analysis_coverage.tsv").open("w", encoding="utf-8", newline="") as handle:
             writer = csv.DictWriter(handle, list(structural[0]), delimiter="\t", lineterminator="\n")
             writer.writeheader()
             writer.writerows(structural)
         record = dict(command=sys.argv, script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                       families_sha256=hashlib.sha256(families_path.read_bytes()).hexdigest(),
                       index_sha256=hashlib.sha256(index_path.read_bytes()).hexdigest())
-        (analysis / "report.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+        (analysis / "analysis_report_settings.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
         if args.update_readme:
             (collection / "README.md").write_text(replace_report(readme, text), encoding="utf-8")
     except (OSError, ValueError, KeyError, subprocess.CalledProcessError) as error:

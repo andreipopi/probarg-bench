@@ -202,7 +202,7 @@ def summarize(rows, output):
                               attacks_mean=f"{sum(row['attack_count'] for row in group) / len(group):.3f}",
                               width_ok=len(widths), width_min=min(widths) if widths else "",
                               width_max=max(widths) if widths else ""))
-    write_table(output / "summary.tsv", summaries)
+    write_table(output / "analysis_summary.tsv", summaries)
     counts = Counter(row["width_status"] for row in rows)
     text = ["# Structural statistics", "", f"Instances inventoried: {len(rows)}.", "",
             "Graph: all declared arguments; an undirected edge for either attack direction.",
@@ -218,8 +218,8 @@ def summarize(rows, output):
             ranges.append(f"{min(row[key] for row in group)}--{max(row[key] for row in group)}")
         widths = [int(row["decomposition_width"]) for row in group if row["width_status"] == "ok"]
         text.append(f"| {family} | {len(group)} | " + " | ".join(ranges) + f" | {min(widths) if widths else 'pending'}--{max(widths) if widths else 'pending'} |")
-    text += ["", "The complete measurements are in [index.tsv](index.tsv); grouped statistics are in [summary.tsv](summary.tsv).", ""]
-    (output / "summary.md").write_text("\n".join(text), encoding="utf-8")
+    text += ["", "The complete measurements are in [analysis_instances.tsv](analysis_instances.tsv); grouped statistics are in [analysis_summary.tsv](analysis_summary.tsv).", ""]
+    (output / "analysis_summary.md").write_text("\n".join(text), encoding="utf-8")
 
 
 def main():
@@ -284,7 +284,7 @@ def main():
         rows.append(row)
         if len(rows) % 25 == 0:
             print(f"Analyzed {len(rows)}/{len(paths)}", flush=True)
-    write_table(args.output / "index.tsv", rows)
+    write_table(args.output / "analysis_instances.tsv", rows)
     summarize(rows, args.output)
     record = dict(command=sys.argv, python_version=sys.version,
                   script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
@@ -292,7 +292,7 @@ def main():
                   htd_command=[str(program), *extra_args] if program else None,
                   htd_binary_sha256=hashlib.sha256(program.read_bytes()).hexdigest() if program else None,
                   timeout_seconds=args.timeout, instance_count=len(rows), limit=args.limit)
-    (args.output / "run.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+    (args.output / "analysis_settings.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {len(rows)} rows to {args.output}")
 
 

@@ -90,8 +90,8 @@ Path('random-state.txt').write_text(repr(random.getstate()))
                              "--n", "4", "--replicates", "2", "--seed", "123"]
                 with patch.object(sys, "argv", arguments), contextlib.redirect_stdout(io.StringIO()):
                     driver.run_cli(engine, paper)
-                record = json.loads((output / "generation.json").read_text())
-                manifest = report.read_table(output / "generation.tsv")
+                record = json.loads((output / "generation_settings.json").read_text())
+                manifest = report.read_table(output / "generation_instances.tsv")
                 self.assertEqual(len(manifest), 4)
                 self.assertEqual(record["source_sha256"], driver.SOURCES[paper]["sha256"])
                 self.assertEqual(record["master_seed"], 123)
@@ -117,6 +117,40 @@ Path('random-state.txt').write_text(repr(random.getstate()))
 
 
 class WorkflowTests(unittest.TestCase):
+    def test_generated_dataset_measurements_and_report_use_descriptive_names(self):
+        with tempfile.TemporaryDirectory() as directory:
+            dataset = Path(directory) / "dataset"
+            analysis = dataset / "analysis" / "counts-v1"
+            commands = (
+                (driver.run_cli,
+                 ["PW24-generator.py", "--output", str(dataset), "--k", "2", "--n", "3",
+                  "--replicates", "1", "--seed", "123"]),
+                (stats.main, ["paf_stats.py", str(dataset), "--output", str(analysis)]),
+                (report.main, ["paf_report.py", str(dataset), "--analysis", "analysis/counts-v1",
+                               "--update-readme"]),
+            )
+            for action, arguments in commands:
+                with patch.object(sys, "argv", arguments), contextlib.redirect_stdout(io.StringIO()):
+                    if action is driver.run_cli:
+                        action(ENGINES["PW24"], "PW24")
+                    else:
+                        action()
+            measurements = report.read_table(analysis / "analysis_instances.tsv")
+            self.assertEqual(len(measurements), 1)
+            self.assertEqual(measurements[0]["width_status"], "not_run")
+            readme = (dataset / "README.md").read_text()
+            self.assertIn("analysis/counts-v1/analysis_instances.tsv", readme)
+            self.assertIn("families_parameters.tsv", readme)
+            self.assertIn("analysis/counts-v1/analysis_settings.json", readme)
+            settings = json.loads((analysis / "analysis_report_settings.json").read_text())
+            self.assertEqual(settings["index_sha256"],
+                             hashlib.sha256((analysis / "analysis_instances.tsv").read_bytes()).hexdigest())
+            for path in (dataset / "families_parameters.tsv", dataset / "generation_settings.json",
+                         dataset / "generation_instances.tsv", analysis / "analysis_summary.tsv",
+                         analysis / "analysis_summary.md", analysis / "analysis_report.md",
+                         analysis / "analysis_coverage.tsv"):
+                self.assertTrue(path.is_file(), path)
+
     def test_valid_path_decomposition(self):
         bags, edges, header = stats.parse_decomposition("s td 2 2 3\nb 1 1 2\nb 2 2 3\n1 2\n")
         self.assertEqual(stats.validate_decomposition(bags, edges, [(1, 2), (2, 3)], 3, header), 2)

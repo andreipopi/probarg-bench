@@ -5,6 +5,12 @@ function is unchanged, including the graph-generation functions and file
 writers. The added runner sets a seed before calling them and saves the
 outputs, tables and settings afterward.
 
+Run the generator directly with the parameters below. Its command-line
+runner makes the calls for every parameter combination and replicate.
+The [main README walkthrough](../README.md#generating-and-measuring-a-paf-dataset)
+covers generation, graph measurements, and the tables and plot in the dataset
+README, using the 300-instance pilot as an example.
+
 Unchanged source files are kept in [`originals/`](originals/), with their
 original filenames, commits and file hashes. See its
 [README](originals/README.md) for the comparisons used to check this.
@@ -71,19 +77,32 @@ The imported journal PAF dataset uses `in(...)` for its query instead.
 `paf_stats.py` and `paf_report.py` currently support PAFs. PBAF structural
 measurements, report generation, and labels will be added separately.
 
-## Added dataset code
+## Running the generators
 
-Run these commands from the repository root. For example, to generate 16 PAFs:
+Run these commands from the repository root. To generate the 300-instance PAF
+pilot:
 
 ```bash
-python3 generators/PW24-generator.py --output datasets/paf-pw24-v1 \
-  --k 2 3 --n 5 10 --replicates 4 --seed 20261103
+python3 generators/PW24-generator.py \
+  --output datasets/paf-pw24-pilot-v1 \
+  --k 2 3 4 5 6 \
+  --n 2 3 5 10 15 20 \
+  --replicates 10 \
+  --seed 20261105
 ```
 
-`k * n` is the number of arguments. Four instances are generated for each
-`k, n` pair. Change these values to choose the size range and instance count.
-Add `--dry-run` to preview the count without writing files. Use a new output
-directory for a new dataset.
+| Option | Meaning |
+| --- | --- |
+| `--output` | A new directory for the dataset. Existing directories are refused. |
+| `--k` | One or more grid widths. |
+| `--n` | One or more grid lengths. Each PAF has `k * n` arguments. |
+| `--replicates` | Number of independently seeded instances per `k, n` pair; defaults to 4. |
+| `--seed` | Master seed, chosen by the person generating the dataset. |
+| `--dry-run` | Print the planned instance count without writing files. |
+
+All combinations are generated: five `k` values, six `n` values and ten
+replicates give `5 * 6 * 10 = 300` PAFs. Change these values to choose the
+size range and count. Both generators also support `--help`.
 
 The master seed produces a recorded seed for each parameter pair and replicate.
 Adding more sizes does not change the instances for an existing combination.
@@ -93,14 +112,16 @@ cannot be recreated without their original seeds.
 After generation, use the [measurement and reporting scripts](../scripts/README.md).
 Instructions for adding solver answers are in the [dataset README](../datasets/README.md).
 
+## Added dataset code
+
 [`dataset_support.py`](dataset_support.py) contains the added code. It calls
 the original functions in the original order, in a temporary working folder
 so their fixed output paths need no edits. Each instance gets a recorded seed.
 
 The original file body is preserved byte-for-byte. Settings are prepended as
-`% probarg ...` comments. `generation.tsv` records the seeds and hashes of both
-the full files and their original bodies. `generation.json` saves the settings,
-and `families.tsv` and the README contain the parameter table. Tables and plots
+`% probarg ...` comments. `generation_instances.tsv` records the seeds and hashes of both
+the full files and their original bodies. `generation_settings.json` saves the settings,
+and `families_parameters.tsv` and the README contain the parameter table. Tables and plots
 based on measured graph properties remain in the separate analysis scripts.
 
 The tests run both unchanged originals with injected seeds and compare native

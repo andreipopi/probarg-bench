@@ -119,7 +119,7 @@ Source: `{spec['repository']}`, commit `{spec['commit']}`,
 prepended as `%` comments. Their names, facts and ordering are preserved.
 {format_note}
 
-`generation.json` saves the settings; `families.tsv` lists the family parameters.
+`generation_settings.json` saves the settings; `families_parameters.tsv` lists the family parameters.
 No solver labels have been computed yet.
 
 <!-- probarg-report:start -->
@@ -199,8 +199,8 @@ def run_cli(engine, paper):
                       certainty_weight="0.1", generator=spec["generator"])
     if paper == "PW25":
         record["support_probability"] = family_row["support_probability"] = "0.1"
-    (output / "generation.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
-    for filename, rows in (("families.tsv", [family_row]), ("generation.tsv", manifest)):
+    (output / "generation_settings.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+    for filename, rows in (("families_parameters.tsv", [family_row]), ("generation_instances.tsv", manifest)):
         with (output / filename).open("w", encoding="utf-8", newline="") as handle:
             writer = csv.DictWriter(handle, list(rows[0]), delimiter="\t", lineterminator="\n")
             writer.writeheader()

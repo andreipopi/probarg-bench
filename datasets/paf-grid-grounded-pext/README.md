@@ -13,13 +13,13 @@ be added separately.
 ```text
 paf-grid-grounded-pext/
 ├── README.md
-├── index.tsv
+├── labels_results.tsv
 └── instances/
     ├── grid_050/
     └── grid_075/
 ```
 
-The `.lp` files contain the PAFs. `index.tsv` is a plain-text table with columns
+The `.lp` files contain the PAFs. `labels_results.tsv` is a plain-text table with columns
 separated by tabs and one row per instance. It includes the solver status,
 answer when available, graph statistics, source, and SHA-256 file hash.
 Users choose their own training, validation, and test splits.
@@ -51,7 +51,7 @@ parameters and replicate, for example `k3_n20_qa24_4.lp`. The total number of
 arguments is `k * n`; `qa24` records query argument `a24`.
 
 The parameter `k` controls generation and is not a measured treewidth.
-`families.tsv` records the historical settings taken from the source
+`families_parameters.tsv` records the historical settings taken from the source
 generator code. The historical seeds are unavailable and remain unrecorded.
 
 <!-- probarg-report:start -->
@@ -77,12 +77,12 @@ Seeds marked unrecorded are unavailable for historical instances.
 Graph: the underlying undirected graph of declared attacks, with reciprocal attacks collapsed and self-attacks omitted for width computation.
 Widths are validated decomposition upper bounds on treewidth. Ranges describe the analyzed rows; instances outside a partial analysis have no measurements in this report.
 
-![PAF size and width coverage](analysis/htd-v1/coverage.png)
+![PAF size and width coverage](analysis/htd-v1/analysis_coverage.png)
 
-Sources: [family parameters](families.tsv), [per-instance measurements](analysis/htd-v1/index.tsv), [measurement configuration](analysis/htd-v1/run.json).
+Sources: [family parameters](families_parameters.tsv), [per-instance measurements](analysis/htd-v1/analysis_instances.tsv), [measurement configuration](analysis/htd-v1/analysis_settings.json).
 <!-- probarg-report:end -->
 
-The original imported index and probability labels remain the record of their
+The imported labels table remains the record of its
 earlier solver runs; a successful fresh width measurement does not recompute
 a previously failed probability label.
 
@@ -105,7 +105,7 @@ preserves those strings but does not claim that the serialization itself is an
 exact rational representation. `label_decimal` gives a convenient model target
 for both representations.
 
-## Index columns
+## Label table columns
 
 - identity and provenance: `instance_id`, `instance_path`, `family`,
   `instance_sha256`, `source_commit`;
