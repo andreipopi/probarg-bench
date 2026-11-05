@@ -95,9 +95,9 @@ be rerun without repeating measurements.
 
 ### 4. Compute the probability labels
 
-The pilot will use complete-extension probabilities; grounded-extension labels
-can be added in a separate solver run. The batch solver launcher and result
-exporter still need to be connected. See [label files and settings](datasets/README.md#adding-solver-answers).
+Run solvers in an external project and import their result tables and settings.
+The pilot uses complete-extension probabilities; grounded-extension labels can
+be added in a separate run. See the [expected solver outputs](datasets/README.md#adding-solver-answers).
 
 For another dataset, change the parameters and dataset path throughout.
 PBAF generation is available through `PW25-generator.py`; PBAF measurements

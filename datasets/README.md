@@ -40,16 +40,36 @@ Users choose their own training, validation and test splits.
 
 ## Adding solver answers
 
-Save each task/semantics/solver run under `labels/<solver-run>/`:
+For the pilot:
 
-- `labels_results.tsv`: instance path and hash, status, probability and runtime;
-- `labels_settings.json`: solver version, command, task, semantics, arithmetic,
-  resource limits and decomposition settings;
-- `logs/`: original solver output.
+1. Read the native `.lp` files in `instances/`. Use `extension(...)` as the
+   candidate set; ignore `query(...)` and `%` comments.
+2. Run journal `ver-td-COM` externally for complete-extension probabilities
+   under the constellation model. Solver code and logs stay outside this repo.
+3. Return `labels_results.tsv` and `labels_settings.json` under
+   `labels/complete-extension-td-v1/`.
 
-Keep exact numerators and denominators when available. Timeouts and errors
-have blank answers. Store complete- and grounded-extension labels in separate
-runs. The solver launcher and result exporter still need to be connected.
+**Results:** one row per instance, with these columns:
+
+| Column | Value |
+| --- | --- |
+| `instance_path` | Path relative to the dataset directory. |
+| `instance_sha256` | Copy from `generation_instances.tsv`. |
+| `status` | `ok`, `timeout`, `error` or `invalid_td`. |
+| `probability_numerator` | Exact numerator. |
+| `probability_denominator` | Exact positive denominator. |
+| `probability_decimal` | Decimal text derived from the fraction; scientific notation allowed. |
+| `runtime_seconds` | Wall-clock seconds, including HTD. |
+
+Export the internal fraction, not the solver's printed float. Zero is `0/1`;
+leave probability fields blank on failure. Existing `.td` certificates are
+not direct inputs to this solver's traversal parser.
+
+**Settings:** use `task="extension_verification"`, `semantics="complete"` and
+`arithmetic="rational"`. Record the solver revision, command, Python/packages,
+HTD settings and time/memory limits.
+
+Keep future grounded-extension results in a separate run.
 
 See the [generation and analysis walkthrough](../README.md#generating-and-measuring-a-paf-dataset)
 and [dataset README template](../templates/paf-collection.md).
