@@ -1,78 +1,55 @@
 # Datasets
 
-Each dataset has its own directory. For newly generated PAFs:
+Each dataset has a README and native `.lp` files, with generation records,
+measurements and labels stored alongside them:
 
 ```text
 datasets/<dataset-name>/
 ├── README.md
+├── families_parameters.tsv
 ├── generation_settings.json
 ├── generation_instances.tsv
-├── families_parameters.tsv
 ├── instances/
-├── instances_asp/                     # Original alternate PAF encoding
+├── instances_asp/                 # Alternate PAF encoding
 ├── analysis/<measurement-run>/
-│   ├── analysis_instances.tsv
-│   ├── analysis_summary.tsv
-│   ├── analysis_summary.md
-│   ├── analysis_report.md
-│   ├── analysis_coverage.tsv
-│   ├── analysis_coverage.png
-│   ├── analysis_settings.json
-│   ├── analysis_report_settings.json
-│   └── decompositions/
 └── labels/<solver-run>/
-    ├── labels_results.tsv
-    └── labels_settings.json
 ```
 
-The `.lp` files contain the PAFs. `analysis_instances.tsv` is a table with one
-row per instance, giving its name, generator parameters, and graph measurements.
-TSV means tab-separated values: columns are separated by tabs rather than
-commas. A spreadsheet program or text editor can open these files.
+## Files
 
-`generation_settings.json` saves the generation settings, including the seed
-and command. `analysis_settings.json` saves the settings for graph measurements;
-`analysis_report_settings.json` saves the command and input hashes used to
-produce a report. `labels_settings.json` is the planned settings file for each
-solver run. JSON stores named values in a text file; the scripts save these
-settings so the computations can be repeated.
+| File | Contents |
+| --- | --- |
+| `families_parameters.tsv` | Generator families, parameter ranges and instance counts. |
+| `generation_settings.json` | Generation command, seeds, code versions and settings. |
+| `generation_instances.tsv` | Per-instance seeds and hashes of the full file and original body. |
+| `analysis_instances.tsv` | Per-instance graph measurements and width statuses. |
+| `analysis_summary.tsv`, `analysis_summary.md` | Grouped statistics and readable summary. |
+| `analysis_settings.json` | Measurement command and tool settings. |
+| `analysis_report.md`, `analysis_coverage.tsv`, `analysis_coverage.png` | Tables and coverage figure. |
+| `analysis_report_settings.json` | Report command and input hashes. |
+| `decompositions/` | Validated `.td` files under the analysis run. |
 
-`generation_instances.tsv` saves the seed and file hash for each generated instance.
-It also saves the hash of the original file body before generation comments
-were added. The original PW24 generator's alternate integer-scaled files are
-kept under `instances_asp/`; they are the same examples in another encoding.
+TSV files are text tables with tab-separated columns; JSON files store named
+settings. SHA-256 hashes identify file contents so results can be matched to
+the correct instance. `instances_asp/` contains alternate encodings of the
+same PAFs.
 
-The labels table records solver answers. It uses the same instance names and
-SHA-256 hashes as the graph table. A hash is a fingerprint of a file's
-contents, used here to check that an answer refers to the same PAF file.
-Failed or timed-out computations have a status and a blank answer, rather
-than an answer of zero. Exact fractions are kept when available.
-
-The imported dataset keeps its existing combined labels and measurements in
-`labels_results.tsv`; fresh measurements are stored under `analysis/`.
-
-Users choose their own training, validation, and test splits.
-
-Use one dataset README to explain its families and show its tables and plots.
-See the [generator commands](../generators/README.md),
-[measurement and plotting commands](../scripts/README.md), and the
-[README template](../templates/paf-collection.md) for a starting point.
+The imported journal dataset keeps its combined labels and historical
+measurements in `labels_results.tsv`; fresh measurements are under `analysis/`.
+Users choose their own training, validation and test splits.
 
 ## Adding solver answers
 
-Run the exact solvers on the generated `.lp` files. Save each experiment under
-`labels/<solver-run>/`, with its settings in `labels_settings.json` and answers
-in `labels_results.tsv`. Record the solver version, command, task, semantics,
-arithmetic mode, time and memory limits, and decomposition settings.
+Save each task/semantics/solver run under `labels/<solver-run>/`:
 
-The results table should contain the instance name and hash, status, probability
-and runtime. Keep exact numerators and denominators when available. Failed
-computations have blank probability fields. Keep extension-verification and
-acceptance results in separate runs, with their semantics stated.
+- `labels_results.tsv`: instance path and hash, status, probability and runtime;
+- `labels_settings.json`: solver version, command, task, semantics, arithmetic,
+  resource limits and decomposition settings;
+- `logs/`: original solver output.
 
-The solver launcher and answer export still need to be connected for each task.
+Keep exact numerators and denominators when available. Timeouts and errors
+have blank answers. Store complete- and grounded-extension labels in separate
+runs. The solver launcher and result exporter still need to be connected.
 
-Current dataset:
-
-- [`paf-grid-grounded-pext`](paf-grid-grounded-pext/): 528 PAFs and 448
-  grounded-extension-verification answers.
+See the [generation and analysis walkthrough](../README.md#generating-and-measuring-a-paf-dataset)
+and [dataset README template](../templates/paf-collection.md).
