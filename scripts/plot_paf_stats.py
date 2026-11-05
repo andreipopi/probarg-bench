@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
-"""Plot size versus decomposition width from a PAF index (requires matplotlib)."""
+"""Plot size versus decomposition width, with circle area showing instance count."""
 
 import argparse
+from collections import Counter
 import csv
 from pathlib import Path
+
+
+def count_width_positions(rows):
+    return Counter((int(row["argument_count"]), int(row["decomposition_width"]))
+                   for row in rows if row.get("decomposition_width", "") != ""
+                   and row.get("width_status", "ok") == "ok")
 
 
 def main():
@@ -25,30 +32,35 @@ def main():
         from matplotlib.ticker import MaxNLocator
     except ImportError:
         parser.error("plotting requires matplotlib; see scripts/README.md")
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4), constrained_layout=True)
+    fig, axis = plt.subplots(figsize=(9, 4.3), constrained_layout=True)
     families = sorted({row["family"] for row in rows})
-    measured = 0
+    groups = {family: count_width_positions([row for row in rows if row["family"] == family])
+              for family in families}
+    maximum = max((count for group in groups.values() for count in group.values()), default=0)
+    area_per_instance = 120 / maximum if maximum else 1
     for family in families:
-        group = [row for row in rows if row["family"] == family]
-        widths = [row for row in group if row.get("decomposition_width", "") != ""
-                  and row.get("width_status", "ok") == "ok"]
-        measured += len(widths)
-        axes[0].scatter([int(row["argument_count"]) for row in widths],
-                        [int(row["decomposition_width"]) for row in widths],
-                        s=17, alpha=0.55, label=f"{family} ({len(widths)})")
-        axes[1].scatter([int(row["argument_count"]) for row in group],
-                        [int(row["attack_count"]) for row in group],
-                        s=17, alpha=0.4, label=family)
-    axes[0].set(xlabel="Arguments", ylabel="Decomposition width (upper bound)",
-                title=f"Measured widths: {measured}/{len(rows)} instances")
-    axes[1].set(xlabel="Arguments", ylabel="Directed attacks", title="Graph size coverage")
-    axes[0].yaxis.set_major_locator(MaxNLocator(integer=True))
-    if measured == 0:
-        axes[0].text(0.5, 0.5, "Widths have not been measured", ha="center", transform=axes[0].transAxes)
-    for axis in axes:
-        axis.grid(alpha=0.2)
-        axis.set_axisbelow(True)
-        axis.legend(fontsize=8)
+        counts = groups[family]
+        positions = sorted(counts)
+        if positions:
+            axis.scatter([point[0] for point in positions], [point[1] for point in positions],
+                         s=[area_per_instance * counts[point] for point in positions],
+                         alpha=0.65, edgecolors="#475569", linewidths=0.4, label=family)
+    axis.set(xlabel="Arguments", ylabel="Decomposition width (upper bound)",
+             title="PAF size and decomposition width")
+    axis.yaxis.set_major_locator(MaxNLocator(integer=True))
+    if not maximum:
+        axis.text(0.5, 0.5, "Widths have not been measured", ha="center", transform=axis.transAxes)
+    else:
+        if len(families) > 1:
+            axis.add_artist(axis.legend(title="Family", loc="upper left", frameon=False))
+        legend_counts = sorted({1, (maximum + 1) // 2, maximum})
+        handles = [axis.scatter([], [], s=area_per_instance * count, color="#64748b",
+                                alpha=0.65, edgecolors="#475569", linewidths=0.4, label=str(count))
+                   for count in legend_counts]
+        axis.legend(handles=handles, title="Instances per point", loc="center left",
+                    bbox_to_anchor=(1.02, 0.5), frameon=False, labelspacing=1.2)
+    axis.grid(alpha=0.2)
+    axis.set_axisbelow(True)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(args.output, dpi=180)
     plt.close(fig)

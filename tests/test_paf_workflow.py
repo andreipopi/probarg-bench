@@ -29,6 +29,7 @@ ENGINES = {paper: load(paper, f"generators/{paper}-generator.py") for paper in (
 driver = load("dataset_support", "generators/dataset_support.py")
 stats = load("paf_stats", "scripts/paf_stats.py")
 report = load("paf_report", "scripts/paf_report.py")
+plot = load("plot_paf_stats", "scripts/plot_paf_stats.py")
 
 
 class GeneratorFidelityTests(unittest.TestCase):
@@ -182,7 +183,9 @@ class WorkflowTests(unittest.TestCase):
     def test_report_distinguishes_partial_analysis_and_failed_widths(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            families = [dict(family="first", instance_count="2"), dict(family="second", instance_count="1")]
+            families = [dict(family=name, instance_count=count, k_values="1", n_values="1",
+                             replicates="1", edge_probability="0.75", master_seed="123")
+                        for name, count in (("first", "2"), ("second", "1"))]
             rows = []
             for i, family in enumerate(("first", "first", "second")):
                 path = root / "instances" / family / f"example{i}.lp"
@@ -191,7 +194,7 @@ class WorkflowTests(unittest.TestCase):
                 if i < 2:
                     rows.append(dict(family=family, instance_path=path.relative_to(root).as_posix(),
                                      instance_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
-                                     argument_count="1", attack_count="0", weak_component_count="1",
+                                     argument_count="1", attack_count="0", weak_component_count="1", candidate_size="0",
                                      width_status="ok" if i == 0 else "timeout",
                                      decomposition_width="0" if i == 0 else ""))
             table = report.coverage(root, families, rows)
@@ -199,9 +202,38 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual(table[0]["other_width_statuses"], "timeout=1")
             self.assertEqual(table[1]["analyzed"], 0)
             self.assertEqual(table[1]["decomposition_width"], "pending")
+            text = report.report_text(families, table, "analysis/test", False)
+            self.assertIn("Analysed 2/3 instances; valid widths: 1/2.", text)
+            self.assertIn("first: timeout=1", text)
+            self.assertIn("second: 1 not analysed", text)
+            self.assertNotIn("analysed successfully", text)
             (root / rows[0]["instance_path"]).write_text("arg(b).\np(b,1).\n")
             with self.assertRaisesRegex(ValueError, "hash changed"):
                 report.coverage(root, families, rows)
+
+    def test_complete_report_is_compact_and_keeps_candidate_coverage(self):
+        families = [dict(family="grid_075", k_values="2", n_values="2, 3", replicates="1",
+                         edge_probability="0.75", master_seed="123", generator="internal-generator-id")]
+        structural = [dict(family="grid_075", instances=3, analyzed=3, arguments="4–6",
+                           directed_attacks="2–8", candidate_size="0–2", empty_candidates=1,
+                           decomposition_width="1–2", valid_widths=3, other_width_statuses="none")]
+        text = report.report_text(families, structural, "analysis/test", True)
+        self.assertIn("| Instances | Arguments | Attacks | Candidate size | Width upper bound |", text)
+        self.assertIn("All 3 instances analysed successfully.", text)
+        self.assertIn("Empty candidate sets: 1/3 (33.3%).", text)
+        self.assertIn("k × n", text)
+        self.assertIn("at least one attack between neighbouring vertices", text)
+        self.assertIn("Circle area represents", text)
+        self.assertNotIn("internal-generator-id", text)
+        self.assertNotIn("Other statuses", text)
+
+    def test_plot_counts_overlapping_instances_and_excludes_failed_widths(self):
+        rows = [dict(argument_count="4", decomposition_width="2", width_status="ok"),
+                dict(argument_count="4", decomposition_width="2", width_status="ok"),
+                dict(argument_count="6", decomposition_width="2", width_status="ok"),
+                dict(argument_count="6", decomposition_width="", width_status="timeout"),
+                dict(argument_count="6", decomposition_width="9", width_status="invalid_td")]
+        self.assertEqual(plot.count_width_positions(rows), {(4, 2): 2, (6, 2): 1})
 
     def test_readme_report_replacement_preserves_authored_text(self):
         source = f"# Dataset\n\nMethods.\n{report.START}\nOld report\n{report.END}\n\nCitation.\n"

@@ -89,9 +89,9 @@ python3 -m venv .venv
   --update-readme
 ```
 
-This updates the dataset README with family parameters, structural coverage
-and a figure of graph sizes, attack counts and widths. It can be rerun
-without repeating measurements.
+This updates the dataset README with generator parameters, graph and candidate
+sizes, and a size-versus-width plot. Circle area shows instance count. It can
+be rerun without repeating measurements.
 
 ### 4. Compute the probability labels
 

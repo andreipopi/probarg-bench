@@ -68,6 +68,8 @@ def coverage(collection, families, rows):
         result.append(dict(family=family, instances=actual[family], analyzed=len(group),
                            arguments=interval(group, "argument_count"),
                            directed_attacks=interval(group, "attack_count"),
+                           candidate_size=interval(group, "candidate_size"),
+                           empty_candidates=sum(int(row["candidate_size"]) == 0 for row in group),
                            weak_components=interval(group, "weak_component_count"),
                            decomposition_width=interval(valid, "decomposition_width"),
                            valid_widths=len(valid),
@@ -76,33 +78,53 @@ def coverage(collection, families, rows):
 
 
 def report_text(families, structural, relative_analysis, has_plot):
+    multiple_families = len(families) > 1
     parameter_rows = []
     for family in families:
         value = family.get("edge_probability", "")
         percent = format((Decimal(value) * 100).normalize(), "f") + "%" if value else "unrecorded"
-        parameter_rows.append([family["family"], percent, family["k_values"], family["n_values"],
-                               family["replicates"], family["instance_count"],
-                               family.get("master_seed", "") or "unrecorded"])
-    sections = ["## Families and generator parameters", "",
-                markdown(["Family", "Grid-edge probability", "k", "n", "Replicates", "Instances", "Master seed"], parameter_rows), ""]
-    for family in families:
-        sections.append(f"- `{family['family']}`: generator `{family['generator']}`; "
-                        f"candidate inclusion probability {family['candidate_probability']}; "
-                        f"sampling weight of probability one {family['certainty_weight']} "
-                        "(each value 0.1–0.9 has weight 10).")
+        prefix = [family["family"]] if multiple_families else []
+        parameter_rows.append(prefix + [family["k_values"], family["n_values"],
+                                        family["replicates"], percent])
+    family_header = ["Family"] if multiple_families else []
+    sections = ["## Generator parameters", "",
+                markdown(family_header + ["k", "n", "Replicates", "Grid connection probability"], parameter_rows), "",
+                "Each PAF has `k × n` arguments; replicates are instances per `(k, n)` pair.",
+                "A grid connection means at least one attack between neighbouring vertices.", ""]
     if any(not family.get("master_seed", "") for family in families):
-        sections += ["", "Seeds marked unrecorded are unavailable for historical instances."]
-    sections += ["", "## Structural coverage", "",
-                 markdown(["Family", "Instances", "Analyzed", "Arguments", "Directed attacks", "Weak components", "Decomposition width", "Valid widths", "Other statuses"],
-                          [[r["family"], r["instances"], r["analyzed"], r["arguments"], r["directed_attacks"],
-                            r["weak_components"], r["decomposition_width"], r["valid_widths"], r["other_width_statuses"]]
+        sections += ["Historical generation seeds are unavailable.", ""]
+    sections += ["## Dataset summary", "",
+                 markdown(family_header + ["Instances", "Arguments", "Attacks", "Candidate size", "Width upper bound"],
+                          [([r["family"]] if multiple_families else []) +
+                           [r["instances"], r["arguments"], r["directed_attacks"], r["candidate_size"], r["decomposition_width"]]
                            for r in structural]), "",
-                 "Graph: the underlying undirected graph of declared attacks, with reciprocal attacks collapsed and self-attacks omitted for width computation.",
-                 "Widths are validated decomposition upper bounds on treewidth. Ranges describe the analyzed rows; instances outside a partial analysis have no measurements in this report.", ""]
+                 "Attacks are directed. Widths are validated upper bounds on treewidth of the undirected attack graph.", ""]
+    total = sum(row["instances"] for row in structural)
+    analyzed = sum(row["analyzed"] for row in structural)
+    valid = sum(row["valid_widths"] for row in structural)
+    if valid == analyzed == total:
+        sections += [f"All {total} instances analysed successfully.", ""]
+    else:
+        sections += [f"Analysed {analyzed}/{total} instances; valid widths: {valid}/{analyzed}.",
+                     "Ranges cover analysed instances; widths cover successful decompositions.", ""]
+        for row in structural:
+            notes = []
+            if row["analyzed"] < row["instances"]:
+                notes.append(f"{row['instances'] - row['analyzed']} not analysed")
+            if row["other_width_statuses"] != "none":
+                notes.append(row["other_width_statuses"])
+            if notes:
+                sections.append(f"- {row['family']}: " + "; ".join(notes) + ".")
+        sections.append("")
+    empty = sum(row["empty_candidates"] for row in structural)
+    if analyzed:
+        percent = f"{100 * empty / analyzed:.1f}".rstrip("0").rstrip(".")
+        sections += [f"Empty candidate sets: {empty}/{analyzed} ({percent}%).", ""]
     if has_plot:
-        sections += [f"![PAF size and width coverage]({relative_analysis}/analysis_coverage.png)", ""]
-    sections += [f"Sources: [family parameters](families_parameters.tsv), [per-instance measurements]({relative_analysis}/analysis_instances.tsv), "
-                 f"[measurement configuration]({relative_analysis}/analysis_settings.json).", ""]
+        sections += [f"![PAF size and width distribution]({relative_analysis}/analysis_coverage.png)", "",
+                     "Circle area represents the number of instances at each size and width.", ""]
+    sections += [f"Details: [generator settings](families_parameters.tsv) · [measurements]({relative_analysis}/analysis_instances.tsv) · "
+                 f"[analysis settings]({relative_analysis}/analysis_settings.json).", ""]
     return "\n".join(sections)
 
 

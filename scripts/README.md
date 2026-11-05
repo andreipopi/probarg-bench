@@ -62,10 +62,14 @@ The report reads family parameters and measurements, checks counts and file
 hashes, and updates the marked section of the dataset README. It writes:
 
 - `analysis_report.md` and `analysis_coverage.tsv`: tables;
-- `analysis_coverage.png`: argument count against width and directed attacks;
+- `analysis_coverage.png`: argument count against width, with circle area
+  proportional to the number of instances at each position;
 - `analysis_report_settings.json`: report command and input hashes.
 
 Rerun this command to refresh reports without recomputing widths. Omit
 `--update-readme` to save reports only. For tables without a plot, omit
 `--plot` and use `python3`. The plotting script, `plot_paf_stats.py`, can also
 be called separately; `--overwrite` replaces an existing figure.
+
+The README summary includes candidate-set sizes and the number of empty
+candidates. Failed or incomplete width measurements are shown when present.
