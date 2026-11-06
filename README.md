@@ -18,9 +18,10 @@ The provided generators use the original code accompanying:
   > Probabilistic Bipolar Argumentation Frameworks*. SAC 2025, pp. 1051–1052.
   > [https://doi.org/10.1145/3672608.3707819](https://doi.org/10.1145/3672608.3707819)
 
-Original generation functions are unchanged. Added code sets seeds and records
-settings; [source versions and checks](generators/originals/README.md) are provided.
-Each dataset states its format, task, semantics and available labels.
+The default settings reproduce the original generators; PW24 also offers a
+100% grid-connection variant. [Source versions and checks](generators/originals/README.md)
+are provided. Instances can be used with different semantics. Each set of
+labels states its task and semantics.
 Users choose their own training, validation and test splits.
 
 ## Repository layout
@@ -50,9 +51,11 @@ python3 generators/PW24-generator.py \
 ```
 
 All `k, n` combinations are used: `5 * 6 * 10 = 300` instances, each with
-`k * n` arguments. Attack sampling retains the original fixed settings.
+`k * n` arguments. The default uses the original 75% grid-connection probability.
 Use a new output directory; append `--dry-run` to preview the count.
 See [generator options and formats](generators/README.md).
+
+For the main dataset, use the [12,000-instance command with 100% grid connections](generators/README.md#main-dataset-100-grid-connections).
 
 ### 2. Compute graph statistics and decomposition widths
 
@@ -96,8 +99,9 @@ be rerun without repeating measurements.
 ### 4. Compute the probability labels
 
 Run solvers in an external project and import their result tables and settings.
-The pilot uses complete-extension probabilities; grounded-extension labels can
-be added in a separate run. See the [expected solver outputs](datasets/README.md#adding-solver-answers).
+The planned pilot labels are complete-extension probabilities. Keep results
+for each task and semantics in separate label runs. See the
+[expected solver outputs](datasets/README.md#adding-solver-answers).
 
 For another dataset, change the parameters and dataset path throughout.
 PBAF generation is available through `PW25-generator.py`; PBAF measurements
@@ -105,10 +109,12 @@ and reports still need to be added.
 
 ## Available datasets
 
-| Dataset | Task | Instances | Labels | Status |
-| --- | --- | ---: | ---: | --- |
-| [`paf-grid-grounded-pext`](datasets/paf-grid-grounded-pext/) | Grounded-extension verification | 528 | 448 | Imported journal experiments; widths available |
-| [`paf-pw24-pilot-v1`](datasets/paf-pw24-pilot-v1/) | Complete-extension verification | 300 | 0 | New pilot; instances and widths available |
+| Dataset | Instances | Labels in this repo | Status |
+| --- | ---: | --- | --- |
+| [`paf-grid-journal-v1`](datasets/paf-grid-journal-v1/) | 528 | 448 grounded-extension probabilities | Imported journal instances; widths available |
+| [`paf-pw24-pilot-v1`](datasets/paf-pw24-pilot-v1/) | 300 | Not yet imported | Seeded pilot; instances and widths available |
+
+The 12,000-instance `paf-pw24-main-v1` dataset is planned and has not yet been generated.
 
 See [dataset files and formats](datasets/README.md) for the directory structure.
 Historical KR 2024 and SAC 2025 instance sets will be added separately.

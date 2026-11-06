@@ -1,7 +1,8 @@
 """Original PW24 dense PAF generator; dataset runner added below the functions.
 
 Source: paf-td/InstanceGenerator/praaf_grid_generator_dense.py.
-All original functions, including random choices and file writers, are unchanged.
+The default reproduces the original generator. The full-grid option only
+removes the no-attack choice for neighbouring grid pairs; writers are unchanged.
 See originals/README.md and LICENSE-PW24-source.
 """
 
@@ -122,7 +123,7 @@ def neighbourhood(i, j, direction, size):
     return neighbours
 
 
-def create_framework(n, k):
+def create_framework(n, k, connection_probability=0.75):
     
     directions = {1: 'x', 2:'left', 3:'right', 4:'bidirectional'}
     prob_args = {}
@@ -172,7 +173,7 @@ def create_framework(n, k):
                 #updated visited_edges_in_grid
                 visited_edges_in_grid.append([edge[0],edge[1]])
                 visited_edges_in_grid.append([edge[1],edge[0]])
-                pick = random.sample(range(1,5),1)[0]
+                pick = random.sample(range(2,5) if connection_probability == 1 else range(1,5),1)[0]
 
                 if directions[pick] != 'x':
                     #selection_set = neighbourhood(i,j,directions[pick],4)

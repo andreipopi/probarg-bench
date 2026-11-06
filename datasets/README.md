@@ -15,6 +15,8 @@ datasets/<dataset-name>/
 └── labels/<solver-run>/
 ```
 
+Dataset names describe the instances. Task and semantics belong to each label run.
+
 ## Files
 
 | File | Contents |
@@ -34,8 +36,8 @@ settings. SHA-256 hashes identify file contents so results can be matched to
 the correct instance. `instances_asp/` contains alternate encodings of the
 same PAFs.
 
-The imported journal dataset keeps its combined labels and historical
-measurements in `labels_results.tsv`; fresh measurements are under `analysis/`.
+The imported journal dataset keeps its existing grounded labels in
+`labels/grounded-extension-td-v1/labels_results.tsv`; fresh measurements are under `analysis/`.
 Users choose their own training, validation and test splits.
 
 ## Adding solver answers
@@ -69,7 +71,7 @@ not direct inputs to this solver's traversal parser.
 `arithmetic="rational"`. Record the solver revision, command, Python/packages,
 HTD settings and time/memory limits.
 
-Keep future grounded-extension results in a separate run.
+Keep results for other semantics in separate label runs.
 
 See the [generation and analysis walkthrough](../README.md#generating-and-measuring-a-paf-dataset)
 and [dataset README template](../templates/paf-collection.md).

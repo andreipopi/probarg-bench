@@ -2,7 +2,7 @@
 
 These files are preserved from `paf-ver-acc-journal-experiments` commit
 `699275f093cc4c68c688d93c8f3ac10635be3a30` because they document how the
-instances in [`paf-grid-grounded-pext`](../../datasets/paf-grid-grounded-pext/)
+instances in [`paf-grid-journal-v1`](../../datasets/paf-grid-journal-v1/)
 were constructed.
 
 These copies document the original generator settings:
@@ -20,7 +20,7 @@ connected-grid variant, retained because it belongs to the same generator
 lineage; the connected family is not part of the current labeled dataset.
 
 [`PW24-generator.py`](../PW24-generator.py) now contains the original KR 2024
-dense generator, with all its functions unchanged and an added seeded runner.
-Its direction choices are fixed at the original values; it does not combine
-these later journal density variants. The historical files here have no
+dense generator with a seeded runner. Its default reproduces the original
+75% connection setting; `--connection-probability 1` enables full grids.
+The historical files here have no
 recorded seeds, so those particular instances cannot be recreated from a seed.

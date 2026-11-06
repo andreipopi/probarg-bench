@@ -1,7 +1,7 @@
 # Instance generators
 
-The original generation functions and writers are unchanged. The added runner
-sets seeds, generates every parameter combination and records the settings.
+The defaults reproduce the original generators. PW24 also provides a full-grid
+option. The runner sets seeds, generates every parameter combination and records the settings.
 See [source versions and checks](originals/README.md) and the
 [complete workflow](../README.md#generating-and-measuring-a-paf-dataset).
 
@@ -18,7 +18,10 @@ For each grid-neighbour pair, no attack, a forward attack, a reverse attack
 or both are chosen with probability 0.25 each. Candidate inclusion probability
 is 0.04. Probabilities
 0.1–0.9 each have sampling weight 10; probability 1 has weight 0.1.
-These settings are fixed in the original code; there is no density option.
+The default is unchanged. With `--connection-probability 1`, the no-attack
+choice is removed: forward, reverse and bidirectional attacks each have
+probability 1/3. Every neighbouring grid pair is then connected. This concerns
+the declared attack graph; attack existence probabilities remain unchanged.
 
 ## PBAFs: PW25
 
@@ -50,18 +53,45 @@ python3 generators/PW24-generator.py \
 | `--k`, `--n` | Grid dimensions; each PAF has `k * n` arguments. |
 | `--replicates` | Instances per parameter pair; default 4. |
 | `--seed` | Master seed. |
+| `--connection-probability` | PW24 only: `0.75` (original default) or `1` (every neighbouring grid pair connected). |
 | `--dry-run` | Preview the instance count without writing files. |
 
 The example uses `5 * 6 * 10 = 300` instances. Each parameter pair and replicate
 gets its own seed, so adding more combinations preserves existing instances.
 Reproduction requires the same code and Python version.
 
-PW25 accepts the same options:
+### Main dataset: 100% grid connections
+
+This command produces 12,000 PAFs with 4–120 arguments: 30 parameter pairs,
+400 instances each. Run it yourself from the repository root:
+
+```bash
+python3 generators/PW24-generator.py \
+  --output datasets/paf-pw24-main-v1 \
+  --k 2 3 4 5 6 \
+  --n 2 3 5 10 15 20 \
+  --replicates 400 \
+  --seed 20261106 \
+  --connection-probability 1
+```
+
+The output family is `grid_100`, with generator ID `PW24-full-grid-v1`.
+It uses separate instance seeds from the original 75% variant. This is a
+new variant of the publication's generator, not the original KR 2024 setting.
+Then follow the [measurement and reporting steps](../README.md#2-compute-graph-statistics-and-decomposition-widths)
+using `datasets/paf-pw24-main-v1` as the dataset path.
+
+### PBAFs
+
+For PW25:
 
 ```bash
 python3 generators/PW25-generator.py --output datasets/pbaf-pw25-v1 \
   --k 3 4 --n 5 10 --replicates 4 --seed 20261103
 ```
+
+PW25 retains its original 75% connection setting and does not accept
+`--connection-probability`.
 
 ## Formats and generation records
 
@@ -85,8 +115,8 @@ in [LICENSE-PW24-source](LICENSE-PW24-source) and
 [historical journal generators](paf-grid-legacy/) are separate copies whose
 original seeds are unavailable.
 
-Tests compare original function source, native output bytes and final random
-states:
+Tests compare original code, native output bytes and final random states
+under the default settings, and check that full grids contain every neighbour pair:
 
 ```bash
 python3 -m unittest discover -s tests -v

@@ -33,12 +33,19 @@ plot = load("plot_paf_stats", "scripts/plot_paf_stats.py")
 
 
 class GeneratorFidelityTests(unittest.TestCase):
-    def test_sources_and_every_original_function_are_unchanged(self):
+    def test_sources_and_original_functions_except_explicit_connection_option_are_unchanged(self):
         for paper, spec in driver.SOURCES.items():
             with self.subTest(paper=paper):
                 source = ROOT / "generators/originals" / spec["file"]
                 self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), spec["sha256"])
                 original, updated = source.read_text(), Path(ENGINES[paper].__file__).read_text()
+                if paper == "PW24":
+                    # Only these two edits enable full grids; the default must retain the original code.
+                    updated = updated.replace("def create_framework(n, k, connection_probability=0.75):",
+                                              "def create_framework(n, k):", 1)
+                    updated = updated.replace(
+                        "random.sample(range(2,5) if connection_probability == 1 else range(1,5),1)[0]",
+                        "random.sample(range(1,5),1)[0]", 1)
                 original_prefix = original.split("# main()", 1)[0]
                 if paper == "PW25":
                     # The sole permitted cleanup is the original inactive string block.
@@ -116,6 +123,53 @@ Path('random-state.txt').write_text(repr(random.getstate()))
             driver.generate_instance(ENGINES[paper], paper, 2, 3, 1, 999)
             self.assertEqual(first, driver.generate_instance(ENGINES[paper], paper, 3, 5, 1, seed))
 
+    def test_full_grid_contains_every_neighbour_pair_and_no_other_edges(self):
+        engine = ENGINES["PW24"]
+        for k, n in ((1, 1), (1, 6), (3, 5), (6, 2)):
+            for seed in (0, 42, 20261106):
+                with self.subTest(k=k, n=n, seed=seed), tempfile.TemporaryDirectory() as directory:
+                    filename, native, asp = driver.generate_instance(engine, "PW24", k, n, 1, seed, 1)
+                    path = Path(directory) / filename
+                    path.write_bytes(native)
+                    arguments, attacks, *_ = stats.read_paf(path)
+                    expected = set()
+                    for i, row in enumerate(engine.grid):
+                        for j, argument in enumerate(row):
+                            if i + 1 < n:
+                                expected.add(frozenset((argument, engine.grid[i + 1][j])))
+                            if j + 1 < k:
+                                expected.add(frozenset((argument, row[j + 1])))
+                    self.assertEqual(len(arguments), k * n)
+                    self.assertEqual(len(expected), n * (k - 1) + k * (n - 1))
+                    self.assertEqual({frozenset(attack) for attack in attacks}, expected)
+                    self.assertEqual(len(attacks), len(set(attacks)))
+                    self.assertIsNotNone(asp)
+
+    def test_full_grid_has_distinct_seeds_and_accurate_generation_records(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "dataset"
+            arguments = ["PW24-generator.py", "--output", str(output), "--k", "3", "--n", "5",
+                         "--replicates", "2", "--seed", "123", "--connection-probability", "1"]
+            with patch.object(sys, "argv", arguments), contextlib.redirect_stdout(io.StringIO()):
+                driver.run_cli(ENGINES["PW24"], "PW24")
+            settings = json.loads((output / "generation_settings.json").read_text())
+            self.assertEqual(settings["generator"], "PW24-full-grid-v1")
+            self.assertEqual(settings["edge_probability"], "1")
+            families = report.read_table(output / "families_parameters.tsv")
+            self.assertEqual(families[0]["family"], "grid_100")
+            self.assertEqual(families[0]["edge_probability"], "1")
+            self.assertIn("100%", (output / "README.md").read_text())
+            for row in report.read_table(output / "generation_instances.tsv"):
+                path = output / row["instance_path"]
+                *_, metadata = stats.read_paf(path)
+                self.assertEqual(metadata["edge_probability"], "1")
+                self.assertEqual(metadata["generator"], settings["generator"])
+                self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), row["instance_sha256"])
+            self.assertNotEqual(driver.seed_for("PW24", 123, 3, 5, 1),
+                                driver.seed_for("PW24", 123, 3, 5, 1, 1))
+            with self.assertRaises(ValueError):
+                driver.generator_spec("PW25", 1)
+
 
 class WorkflowTests(unittest.TestCase):
     def test_generated_dataset_measurements_and_report_use_descriptive_names(self):
@@ -125,7 +179,7 @@ class WorkflowTests(unittest.TestCase):
             commands = (
                 (driver.run_cli,
                  ["PW24-generator.py", "--output", str(dataset), "--k", "2", "--n", "3",
-                  "--replicates", "1", "--seed", "123"]),
+                  "--replicates", "1", "--seed", "123", "--connection-probability", "1"]),
                 (stats.main, ["paf_stats.py", str(dataset), "--output", str(analysis)]),
                 (report.main, ["paf_report.py", str(dataset), "--analysis", "analysis/counts-v1",
                                "--update-readme"]),
@@ -139,9 +193,13 @@ class WorkflowTests(unittest.TestCase):
             measurements = report.read_table(analysis / "analysis_instances.tsv")
             self.assertEqual(len(measurements), 1)
             self.assertEqual(measurements[0]["width_status"], "not_run")
+            self.assertEqual(measurements[0]["undirected_edge_count"], "7")
+            self.assertEqual(measurements[0]["weak_component_count"], "1")
+            self.assertEqual(measurements[0]["edge_probability"], "1")
             readme = (dataset / "README.md").read_text()
             self.assertIn("analysis/counts-v1/analysis_instances.tsv", readme)
             self.assertIn("families_parameters.tsv", readme)
+            self.assertIn("100%", readme)
             self.assertIn("analysis/counts-v1/analysis_settings.json", readme)
             settings = json.loads((analysis / "analysis_report_settings.json").read_text())
             self.assertEqual(settings["index_sha256"],

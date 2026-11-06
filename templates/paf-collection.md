@@ -1,6 +1,7 @@
 # <Dataset name>
 
-<One paragraph stating formalism, generator family, intended tasks and status.>
+<One paragraph stating formalism, generator family and status. Dataset names
+describe the instances; task and semantics are specified for each label run.>
 
 ## Where the data comes from
 

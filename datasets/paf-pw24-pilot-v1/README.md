@@ -1,7 +1,8 @@
 # paf-pw24-pilot-v1
 
 300 PAFs with 4–120 arguments, generated with recorded seeds using the
-original KR 2024 dense-grid generator. Complete-extension labels are pending.
+original KR 2024 dense-grid generator. These instances support different
+semantics. Solver labels have not yet been imported into this repo.
 
 > Andrei Popescu and Johannes P. Wallner. *Advancing Algorithmic Approaches to
 > Probabilistic Argumentation under the Constellation Approach*. KR 2024.
