@@ -2,7 +2,7 @@
 
 300 PAFs with 4–120 arguments, generated with recorded seeds using the
 original KR 2024 dense-grid generator. These instances support different
-semantics. Solver labels have not yet been imported into this repo.
+semantics.
 
 > Andrei Popescu and Johannes P. Wallner. *Advancing Algorithmic Approaches to
 > Probabilistic Argumentation under the Constellation Approach*. KR 2024.
@@ -49,6 +49,11 @@ Circle area represents the number of instances at each size and width.
 
 Details: [generator settings](families_parameters.tsv) · [measurements](analysis/htd-v1/analysis_instances.tsv) · [analysis settings](analysis/htd-v1/analysis_settings.json).
 <!-- probarg-report:end -->
+
+## Labels
+
+The complete-extension run has finished externally. Its results have not yet
+been imported into this repo.
 
 ## License
 

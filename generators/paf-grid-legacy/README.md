@@ -1,9 +1,8 @@
 # Legacy PAF grid generator snapshots
 
 These files are preserved from `paf-ver-acc-journal-experiments` commit
-`699275f093cc4c68c688d93c8f3ac10635be3a30` because they document how the
-instances in [`paf-grid-journal-v1`](../../datasets/paf-grid-journal-v1/)
-were constructed.
+`699275f093cc4c68c688d93c8f3ac10635be3a30` to document the historical
+generator variants. The pilot, main and large datasets use `PW24-generator.py`.
 
 These copies document the original generator settings:
 
@@ -17,7 +16,7 @@ These copies document the original generator settings:
 `paf_grid_generator_stats.py` is the captured 50% configuration. Its comments
 record the corresponding 75% choice. `praaf_grid_generator.py` is the captured
 connected-grid variant, retained because it belongs to the same generator
-lineage; the connected family is not part of the current labeled dataset.
+lineage. The imported journal instance set is no longer included in ProbArgBench.
 
 [`PW24-generator.py`](../PW24-generator.py) now contains the original KR 2024
 dense generator with a seeded runner. Its default reproduces the original

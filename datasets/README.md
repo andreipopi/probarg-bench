@@ -36,13 +36,12 @@ settings. SHA-256 hashes identify file contents so results can be matched to
 the correct instance. `instances_asp/` contains alternate encodings of the
 same PAFs.
 
-The imported journal dataset keeps its existing grounded labels in
-`labels/grounded-extension-td-v1/labels_results.tsv`; fresh measurements are under `analysis/`.
 Users choose their own training, validation and test splits.
 
 ## Adding solver answers
 
-For the pilot:
+The pilot and main complete-extension runs have finished externally; their
+labels await import. The large run is in progress. For all three datasets:
 
 1. Read the native `.lp` files in `instances/`. Use `extension(...)` as the
    candidate set; ignore `query(...)` and `%` comments.

@@ -36,8 +36,9 @@ evaluation/   Separate space for scoring model predictions
 
 ## Generating and measuring a PAF dataset
 
-Run these commands from the repository root. This example produces 300 PAFs
-with 4–120 arguments. If the pilot already exists, start at step 2.
+The instances are already included. These commands document generation and
+analysis; use a new output directory when generating another dataset.
+Run them from the repository root.
 
 ### 1. Generate the instances
 
@@ -56,6 +57,7 @@ Use a new output directory; append `--dry-run` to preview the count.
 See [generator options and formats](generators/README.md).
 
 For the main dataset, use the [12,000-instance command with 100% grid connections](generators/README.md#main-dataset-100-grid-connections).
+The [large extension](generators/README.md#large-extension) adds 14,400 instances with up to 1,000 arguments.
 
 ### 2. Compute graph statistics and decomposition widths
 
@@ -99,8 +101,7 @@ be rerun without repeating measurements.
 ### 4. Compute the probability labels
 
 Run solvers in an external project and import their result tables and settings.
-The planned pilot labels are complete-extension probabilities. Keep results
-for each task and semantics in separate label runs. See the
+Keep results for each task and semantics in separate label runs. See the
 [expected solver outputs](datasets/README.md#adding-solver-answers).
 
 For another dataset, change the parameters and dataset path throughout.
@@ -109,15 +110,16 @@ and reports still need to be added.
 
 ## Available datasets
 
-| Dataset | Instances | Labels in this repo | Status |
-| --- | ---: | --- | --- |
-| [`paf-grid-journal-v1`](datasets/paf-grid-journal-v1/) | 528 | 448 grounded-extension probabilities | Imported journal instances; widths available |
-| [`paf-pw24-pilot-v1`](datasets/paf-pw24-pilot-v1/) | 300 | Not yet imported | Seeded pilot; instances and widths available |
+| Dataset | Instances | Arguments | Grid connections | Label run |
+| --- | ---: | --- | --- | --- |
+| [`paf-pw24-pilot-v1`](datasets/paf-pw24-pilot-v1/) | 300 | 4–120 | 75% | Computed externally; import pending |
+| [`paf-pw24-main-v1`](datasets/paf-pw24-main-v1/) | 12,000 | 4–120 | 100% | Computed externally; import pending |
+| [`paf-pw24-main-large-v1`](datasets/paf-pw24-main-large-v1/) | 14,400 | 50–1,000 | 100% | Labelling in progress externally |
 
-The 12,000-instance `paf-pw24-main-v1` dataset is planned and has not yet been generated.
+All three sets contain newly generated instances, with recorded seeds.
+The original KR 2024 instance set is not included.
 
 See [dataset files and formats](datasets/README.md) for the directory structure.
-Historical KR 2024 and SAC 2025 instance sets will be added separately.
 
 ## License and citation
 

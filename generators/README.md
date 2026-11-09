@@ -81,6 +81,24 @@ new variant of the publication's generator, not the original KR 2024 setting.
 Then follow the [measurement and reporting steps](../README.md#2-compute-graph-statistics-and-decomposition-widths)
 using `datasets/paf-pw24-main-v1` as the dataset path.
 
+### Large extension
+
+The second part contains 14,400 PAFs with 50–1,000 arguments. Its parameter
+pairs extend the main set beyond `n = 20`:
+
+```bash
+python3 generators/PW24-generator.py \
+  --output datasets/paf-pw24-main-large-v1 \
+  --k 2 3 4 5 6 7 8 9 10 \
+  --n 25 50 75 100 \
+  --replicates 400 \
+  --seed 20261107 \
+  --connection-probability 1
+```
+
+Both main parts are already generated. These commands record how to reproduce
+them; existing output directories are refused.
+
 ### PBAFs
 
 For PW25:
@@ -101,8 +119,7 @@ PW25 retains its original 75% connection setting and does not accept
 | PAF `instances_asp/` | The same PAFs with probabilities scaled to integers out of 10000. |
 | PBAF `instances/` | Includes `support(...)`; `in(...)` is the candidate; probabilities use integers 1–10 for 0.1–1.0. |
 
-In PBAF filenames, `qa...` records the original unused query draw. Imported
-journal PAFs use `in(...)` for their acceptance query; see their dataset README.
+In PBAF filenames, `qa...` records the original unused query draw.
 Current measurement scripts support PAFs.
 
 [`dataset_support.py`](dataset_support.py) writes `generation_settings.json`,
@@ -112,8 +129,8 @@ It prepends `% probarg ...` comments while preserving the original file body.
 Original source copies are in [`originals/`](originals/). MIT notices are kept
 in [LICENSE-PW24-source](LICENSE-PW24-source) and
 [LICENSE-PW25-source](LICENSE-PW25-source). The
-[historical journal generators](paf-grid-legacy/) are separate copies whose
-original seeds are unavailable.
+[historical journal generators](paf-grid-legacy/) are kept as source snapshots;
+the current datasets use `PW24-generator.py`.
 
 Tests compare original code, native output bytes and final random states
 under the default settings, and check that full grids contain every neighbour pair:
