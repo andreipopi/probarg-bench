@@ -1,0 +1,2 @@
+family	edge_probability	k_values	n_values	replicates	instance_count	master_seed	candidate_probability	certainty_weight	generator
+grid_100	1	2	5	100	100	20261112	0.04	0.1	PW24-full-grid-v1
