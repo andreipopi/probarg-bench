@@ -73,3 +73,30 @@ be called separately; `--overwrite` replaces an existing figure.
 
 The README summary includes candidate-set sizes and the number of empty
 candidates. Failed or incomplete width measurements are shown when present.
+
+## Visualize a PAF in AgonProject
+
+[AgonProject](https://agonproject.aig.fernuni-hagen.de/) lets you visualize,
+edit and generate PAFs in a browser. Convert one native benchmark instance
+to its [native JSON format](https://github.com/aig-hagen/AgonProject/blob/dev/docs/formats/save-format.md#paf--probabilistic-argumentation-framework):
+
+```bash
+python3 scripts/paf_to_agon.py \
+  datasets/paf-pw24-pilot-v1/instances/grid_075/k2_n2_qa1_1.lp \
+  --output /tmp/example-paf.json
+```
+
+Requires only Python 3. Use files from `instances/`, where probabilities are
+decimals, rather than the integer-scaled `instances_asp/`. The output must be
+a new file. Open AgonProject, create or open a PAF, then choose **Menu → Open file**
+and select the JSON. You can adjust the layout with **Relayout**.
+
+The converter keeps argument names, attack directions, and argument and attack
+probabilities. Candidate-extension and query facts are included as notes in
+the JSON description; they do not select an evaluation task or highlight a set.
+JSON probabilities use ordinary floating-point numbers for the web interface;
+the original `.lp` files remain the inputs for exact benchmark labels.
+AgonProject currently clamps probabilities below `0.01`, so the converter
+rejects those inputs instead of silently changing their values.
+
+For the tool's paper and authors, see the [AgonProject reference](../README.md#visualize-a-paf).

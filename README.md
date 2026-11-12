@@ -121,6 +121,20 @@ The original KR 2024 instance set is not included.
 
 See [dataset files and formats](datasets/README.md) for the directory structure.
 
+## Visualize a PAF
+
+You can visualize and edit a PAF in [AgonProject](https://agonproject.aig.fernuni-hagen.de/),
+a web tool from the Artificial Intelligence Group at FernUniversität in Hagen.
+It also offers random framework generation. Convert a native `.lp` instance to
+its JSON format, then open that file in AgonProject. See the
+[converter command and import steps](scripts/README.md#visualize-a-paf-in-agonproject).
+
+Reference: Lars Bengel, Matti Berthold, Oleksandr Dzhychko, and Matthias Thimm.
+*AgonProject: An Online Platform for Exploring Approaches to Formal Argumentation*.
+SAFA 2026, CEUR Workshop Proceedings 4262, pp. 2–12.
+[Paper](https://ceur-ws.org/Vol-4262/paper1.pdf) ·
+[Source code](https://github.com/aig-hagen/AgonProject).
+
 ## License and citation
 
 Code and dataset licenses will be stated before the first release. Cite the
