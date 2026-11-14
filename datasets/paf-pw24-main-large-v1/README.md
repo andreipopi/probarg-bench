@@ -1,6 +1,9 @@
 # paf-pw24-main-large-v1
 
-14,400 PAFs with 50–1,000 arguments, extending the [main dataset](../paf-pw24-main-v1/).
+9,541 label-candidate PAFs with 50–1,000 arguments, extending the
+[main dataset](../paf-pw24-main-v1/). They were retained from 14,400 generated
+instances; 4,859 instances without an exact result are stored in the
+[unlabelled split](../paf-pw24-main-large-unlabelled-v1/).
 They use the same full-grid variant of the KR 2024 generator.
 Every neighbouring grid pair has a forward, reverse or bidirectional attack,
 chosen with equal probability. Argument and attack probabilities retain the original settings.
@@ -23,15 +26,18 @@ prepended as `%` comments. Their names, facts and ordering are preserved.
 `instances_asp/` contains the same instances with probabilities scaled to integers out of 10000.
 These are alternate solver inputs, not additional benchmark examples.
 
-`generation_settings.json` saves the settings; `families_parameters.tsv` lists the family parameters.
+`generation_settings.json` saves the original generation settings;
+`families_parameters.tsv` lists the family parameters and current instance count.
 
 <!-- probarg-report:start -->
 ## Families and generator parameters
 
 | Family | Grid-edge probability | k | n | Replicates | Instances | Master seed |
 | --- | --- | --- | --- | --- | --- | --- |
-| grid_100 | 100% | 2, 3, 4, 5, 6, 7, 8, 9, 10 | 25, 50, 75, 100 | 400 | 14400 | 20261107 |
+| grid_100 | 100% | 2, 3, 4, 5, 6, 7, 8, 9, 10 | 25, 50, 75, 100 | up to 400 retained | 9541 | 20261107 |
 
+`k` and `n` are grid dimensions, so each instance has `k × n` arguments.
+The source generated 400 replicates per pair; retained counts now vary by pair.
 
 ## Structural coverage
 
@@ -41,8 +47,9 @@ to add graph statistics, width measurements and the coverage figure.
 
 ## Labels
 
-The complete-extension run is in progress externally. Its results have not
-yet been imported into this repo.
+The complete-extension run is in progress externally. Failed and skipped
+instances are in the [unlabelled split](../paf-pw24-main-large-unlabelled-v1/).
+Results have not yet been imported into this repo.
 
 ## License and citation
 

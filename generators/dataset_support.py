@@ -143,6 +143,9 @@ No solver labels have been imported yet.
 
 {table}
 
+`k` and `n` are grid dimensions, so each instance has `k × n` arguments.
+Replicates are separately generated instances for each `(k, n)` pair.
+
 ## Structural coverage
 
 {coverage}

@@ -31,6 +31,8 @@ These are alternate solver inputs, not additional benchmark examples.
 | --- | --- | --- | --- | --- | --- | --- |
 | grid_100 | 100% | 2, 3, 4, 5, 6 | 2, 3, 5, 10, 15, 20 | 400 | 12000 | 20261106 |
 
+`k` and `n` are grid dimensions, so each instance has `k × n` arguments.
+Replicates are separately generated instances for each `(k, n)` pair.
 
 ## Structural coverage
 

@@ -89,7 +89,8 @@ def report_text(families, structural, relative_analysis, has_plot):
     family_header = ["Family"] if multiple_families else []
     sections = ["## Generator parameters", "",
                 markdown(family_header + ["k", "n", "Replicates", "Grid connection probability"], parameter_rows), "",
-                "Each PAF has `k × n` arguments; replicates are instances per `(k, n)` pair.",
+                "`k` and `n` are grid dimensions, so each PAF has `k × n` arguments. "
+                "Replicates are separately generated instances for each `(k, n)` pair.",
                 "A grid connection means at least one attack between neighbouring vertices.", ""]
     if any(not family.get("master_seed", "") for family in families):
         sections += ["Historical generation seeds are unavailable.", ""]

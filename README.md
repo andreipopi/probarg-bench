@@ -1,8 +1,9 @@
 # ProbArgBench
 
 ProbArgBench is an open benchmark collection for probabilistic argumentation.
-It publishes graph instances in their native formats, the generators that
-produce them, and reference labels produced by exact solvers.
+It publishes graph instances in their native formats and the generators that
+produce them. Reference labels from exact solvers are stored with a dataset
+when they are available.
 
 The provided generators use the original code accompanying:
 
@@ -51,13 +52,17 @@ python3 generators/PW24-generator.py \
   --seed 20261105
 ```
 
-All `k, n` combinations are used: `5 * 6 * 10 = 300` instances, each with
-`k * n` arguments. The default uses the original 75% grid-connection probability.
+The command lists 5 values for `k` and 6 values for `n`, giving 30 `(k, n)`
+combinations. It generates 10 separately seeded instances for each combination:
+`30 × 10 = 300` files in total. An individual instance has `k × n` arguments,
+from `2 × 2 = 4` to `6 × 20 = 120`. The default uses the original 75%
+grid-connection probability.
 Use a new output directory; append `--dry-run` to preview the count.
 See [generator options and formats](generators/README.md).
 
 For the main dataset, use the [12,000-instance command with 100% grid connections](generators/README.md#main-dataset-100-grid-connections).
-The [large extension](generators/README.md#large-extension) adds 14,400 instances with up to 1,000 arguments.
+The [large extension](generators/README.md#large-extension) contains instances
+with up to 1,000 arguments.
 
 ### 2. Compute graph statistics and decomposition widths
 
@@ -114,10 +119,8 @@ and reports still need to be added.
 | --- | ---: | --- | --- | --- |
 | [`paf-pw24-pilot-v1`](datasets/paf-pw24-pilot-v1/) | 300 | 4–120 | 75% | Computed externally; import pending |
 | [`paf-pw24-main-v1`](datasets/paf-pw24-main-v1/) | 12,000 | 4–120 | 100% | Computed externally; import pending |
-| [`paf-pw24-main-large-v1`](datasets/paf-pw24-main-large-v1/) | 14,400 | 50–1,000 | 100% | Labelling in progress externally |
-
-All three sets contain newly generated instances, with recorded seeds.
-The original KR 2024 instance set is not included.
+| [`paf-pw24-main-large-v1`](datasets/paf-pw24-main-large-v1/) | 9,541 | 50–1,000 | 100% | Labelling in progress externally |
+| [`paf-pw24-main-large-unlabelled-v1`](datasets/paf-pw24-main-large-unlabelled-v1/) | 4,859 | 50–1,000 | 100% | Unlabelled after solver cutoff |
 
 See [dataset files and formats](datasets/README.md) for the directory structure.
 

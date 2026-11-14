@@ -280,6 +280,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn("All 3 instances analysed successfully.", text)
         self.assertIn("Empty candidate sets: 1/3 (33.3%).", text)
         self.assertIn("k × n", text)
+        self.assertIn("Replicates are separately generated instances for each `(k, n)` pair.", text)
         self.assertIn("at least one attack between neighbouring vertices", text)
         self.assertIn("Circle area represents", text)
         self.assertNotIn("internal-generator-id", text)

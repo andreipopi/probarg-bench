@@ -50,20 +50,23 @@ python3 generators/PW24-generator.py \
 | Option | Meaning |
 | --- | --- |
 | `--output` | New dataset directory; existing directories are refused. |
-| `--k`, `--n` | Grid dimensions; each PAF has `k * n` arguments. |
-| `--replicates` | Instances per parameter pair; default 4. |
+| `--k`, `--n` | Lists of grid dimensions; every listed `k` is paired with every listed `n`. Each PAF has `k × n` arguments. |
+| `--replicates` | Number of separately seeded instances generated for each `(k, n)` pair; default 4. |
 | `--seed` | Master seed. |
 | `--connection-probability` | PW24 only: `0.75` (original default) or `1` (every neighbouring grid pair connected). |
 | `--dry-run` | Preview the instance count without writing files. |
 
-The example uses `5 * 6 * 10 = 300` instances. Each parameter pair and replicate
-gets its own seed, so adding more combinations preserves existing instances.
+The example lists 5 values for `k` and 6 for `n`, giving 30 `(k, n)` pairs.
+With 10 replicates for each pair, it creates `30 × 10 = 300` files. Each file
+has `k × n` arguments, between 4 and 120 in this example. Every file gets its
+own seed, so adding more combinations preserves existing instances.
 Reproduction requires the same code and Python version.
 
 ### Main dataset: 100% grid connections
 
-This command produces 12,000 PAFs with 4–120 arguments: 30 parameter pairs,
-400 instances each. Run it yourself from the repository root:
+This command lists 5 values for `k` and 6 for `n`: `5 × 6 = 30` parameter
+pairs. It produces 400 instances for every pair, so `30 × 400 = 12,000` PAFs
+in total. Each PAF has 4–120 arguments. Run it yourself from the repository root:
 
 ```bash
 python3 generators/PW24-generator.py \
@@ -83,8 +86,10 @@ using `datasets/paf-pw24-main-v1` as the dataset path.
 
 ### Large extension
 
-The second part contains 14,400 PAFs with 50–1,000 arguments. Its parameter
-pairs extend the main set beyond `n = 20`:
+The second part lists 9 values for `k` and 4 for `n`: `9 × 4 = 36` parameter
+pairs. It produces 400 instances for every pair, so `36 × 400 = 14,400` PAFs
+in total. Each PAF has 50–1,000 arguments. These parameter pairs extend the
+main set beyond `n = 20`:
 
 ```bash
 python3 generators/PW24-generator.py \
