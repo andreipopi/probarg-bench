@@ -53,8 +53,10 @@ Details: [generator settings](families_parameters.tsv) · [measurements](analysi
 
 ## Labels
 
-The complete-extension run has finished externally. Its results have not yet
-been imported into this repo.
+[`labels/complete-extension-td-v1/labels_results.tsv`](labels/complete-extension-td-v1/labels_results.tsv)
+contains exact complete-extension probabilities under the constellation model
+for all 300 instances. Solver provenance and limits are in
+[`labels_settings.json`](labels/complete-extension-td-v1/labels_settings.json).
 
 ## License
 

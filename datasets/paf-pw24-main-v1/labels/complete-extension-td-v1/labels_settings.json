@@ -1,0 +1,24 @@
+{
+  "task": "extension_verification",
+  "semantics": "complete",
+  "formalism": "PAF",
+  "arithmetic": "rational",
+  "solver": "ver-td-COM",
+  "solver_repository": "https://github.com/andreipopi/probabilistic-argumentation-algorithms.git",
+  "solver_commit": "791324de5206e8e0fc03b26eaedde4f50c188e04",
+  "solver_command": "python3 ../ver-td-COM/post_order.py <INSTANCE>",
+  "solver_python_environment": "not recorded in source logs",
+  "htd_configuration": "selected internally by the solver at the recorded revision",
+  "time_limit_seconds": 600,
+  "memory_limit_mib": 8192,
+  "source_log_directory": "results_pw24_main_v1/ver-td-COM",
+  "source_log_count": 7202,
+  "source_logs_sha256": "868e1918c8c022cbf6db787282ff00efdaaaaba6244e000b37957a6a678a62f3",
+  "dataset_manifest_sha256": "19123764ed798ef25d6c22034468c73be27ae9925e812382437501400fb1630d",
+  "importer_sha256": "04f0e1aacf0d3eefa4f76d83f2aadb54cf27557d230ec75f72991be5b199e79e",
+  "instance_count": 12000,
+  "status_counts": {
+    "not_run": 4798,
+    "ok": 7202
+  }
+}

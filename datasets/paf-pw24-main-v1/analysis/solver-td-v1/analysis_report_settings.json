@@ -1,0 +1,13 @@
+{
+  "command": [
+    "scripts/paf_report.py",
+    "datasets/paf-pw24-main-v1",
+    "--analysis",
+    "analysis/solver-td-v1",
+    "--plot",
+    "--update-readme"
+  ],
+  "script_sha256": "6b8f52dd655b955a22d65175df131a8c3a7e5431cd46cfd65afa18fcdf9843b0",
+  "families_sha256": "1538786b4c750ea9503667b8682aef0d928286731115c00c751c6f0f65d3407b",
+  "index_sha256": "25e1a7ed306d823fbb583d075996b20c899bd5ed0648f81a8159f9f55ff9b4cd"
+}

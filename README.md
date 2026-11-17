@@ -25,12 +25,37 @@ are provided. Instances can be used with different semantics. Each set of
 labels states its task and semantics.
 Users choose their own training, validation and test splits.
 
+## Benchmark task
+
+An abstract argumentation framework is a directed graph `F = (A, R)` of
+arguments and attacks. An argumentation semantics `sigma` assigns a collection
+of extensions to each framework.
+
+In a probabilistic argumentation framework (PAF) under the independent
+constellation model, arguments and attacks have existence probabilities. A
+possible framework `F'` is obtained by sampling arguments independently and
+then sampling, also independently, the attacks whose endpoints are present.
+Probabilistic extension verification asks,
+for a candidate set `S`, for
+
+```text
+PEXT_sigma(P, S) = sum over F' of Pr(F') * 1[S is a sigma-extension of F'].
+```
+
+Under complete semantics, an extension is conflict-free, defends all its
+members, and contains every argument it defends. The grounded extension is the
+unique complete extension that is least under set inclusion. The current PW24
+label run uses complete semantics.
+In the native files, `extension(a).` identifies members of `S`. The separate
+`query(a).` fact belongs to an acceptance task and is not used for extension
+verification. Exact labels are probabilities between zero and one.
+
 ## Repository layout
 
 ```text
 datasets/     Instances, labels, measurements and dataset READMEs
 generators/   Original generators with seeded batch runners
-scripts/      Graph measurements, tables and plots
+scripts/      Label import, graph measurements, tables and plots
 templates/    Dataset README template
 evaluation/   Separate space for scoring model predictions
 ```
@@ -103,11 +128,13 @@ This updates the dataset README with generator parameters, graph and candidate
 sizes, and a size-versus-width plot. Circle area shows instance count. It can
 be rerun without repeating measurements.
 
-### 4. Compute the probability labels
+### 4. Import exact-solver labels
 
-Run solvers in an external project and import their result tables and settings.
-Keep results for each task and semantics in separate label runs. See the
-[expected solver outputs](datasets/README.md#adding-solver-answers).
+The solvers and their raw logs stay in the algorithms project. Import a run
+with `scripts/import_solver_logs.py`; the command and output format are
+documented in [scripts/README.md](scripts/README.md#import-exact-solver-results).
+The importer matches every log to an instance hash and checks saved tree
+decompositions before accepting their widths.
 
 For another dataset, change the parameters and dataset path throughout.
 PBAF generation is available through `PW25-generator.py`; PBAF measurements
@@ -117,8 +144,8 @@ and reports still need to be added.
 
 | Dataset | Instances | Arguments | Grid connections | Label run |
 | --- | ---: | --- | --- | --- |
-| [`paf-pw24-pilot-v1`](datasets/paf-pw24-pilot-v1/) | 300 | 4–120 | 75% | Computed externally; import pending |
-| [`paf-pw24-main-v1`](datasets/paf-pw24-main-v1/) | 12,000 | 4–120 | 100% | Computed externally; import pending |
+| [`paf-pw24-pilot-v1`](datasets/paf-pw24-pilot-v1/) | 300 | 4–120 | 75% | 300 complete-extension probabilities |
+| [`paf-pw24-main-v1`](datasets/paf-pw24-main-v1/) | 12,000 | 4–120 | 100% | 7,202 complete-extension probabilities |
 | [`paf-pw24-main-large-v1`](datasets/paf-pw24-main-large-v1/) | 9,541 | 50–1,000 | 100% | Labelling in progress externally |
 | [`paf-pw24-main-large-unlabelled-v1`](datasets/paf-pw24-main-large-unlabelled-v1/) | 4,859 | 50–1,000 | 100% | Unlabelled after solver cutoff |
 

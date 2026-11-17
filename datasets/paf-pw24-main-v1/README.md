@@ -25,25 +25,49 @@ These are alternate solver inputs, not additional benchmark examples.
 `generation_settings.json` saves the settings; `families_parameters.tsv` lists the family parameters.
 
 <!-- probarg-report:start -->
-## Families and generator parameters
+## Generator parameters
 
-| Family | Grid-edge probability | k | n | Replicates | Instances | Master seed |
-| --- | --- | --- | --- | --- | --- | --- |
-| grid_100 | 100% | 2, 3, 4, 5, 6 | 2, 3, 5, 10, 15, 20 | 400 | 12000 | 20261106 |
+| k | n | Replicates | Grid connection probability |
+| --- | --- | --- | --- |
+| 2, 3, 4, 5, 6 | 2, 3, 5, 10, 15, 20 | 400 | 100% |
 
-`k` and `n` are grid dimensions, so each instance has `k × n` arguments.
-Replicates are separately generated instances for each `(k, n)` pair.
+`k` and `n` are grid dimensions, so each PAF has `k × n` arguments. Replicates are separately generated instances for each `(k, n)` pair.
+A grid connection means at least one attack between neighbouring vertices.
 
-## Structural coverage
+## Dataset summary
 
-Run `scripts/paf_stats.py`, then `scripts/paf_report.py --plot --update-readme`
-to add graph statistics, width measurements and the coverage figure.
+| Instances | Arguments | Attacks | Candidate size | Width upper bound |
+| --- | --- | --- | --- | --- |
+| 12000 | 4–120 | 4–303 | 0–11 | 2–5 |
+
+Attacks are directed. Widths are validated upper bounds on treewidth of the undirected attack graph.
+
+Analysed 12000/12000 instances; valid widths: 7202/12000.
+Ranges cover analysed instances; widths cover successful decompositions.
+
+- grid_100: not_run=4798.
+
+Empty candidate sets: 4486/12000 (37.4%).
+
+![PAF size and width distribution](analysis/solver-td-v1/analysis_coverage.png)
+
+Circle area represents the number of instances at each size and width.
+
+Details: [generator settings](families_parameters.tsv) · [measurements](analysis/solver-td-v1/analysis_instances.tsv) · [analysis settings](analysis/solver-td-v1/analysis_settings.json).
 <!-- probarg-report:end -->
 
 ## Labels
 
-The complete-extension run has finished externally. Its results have not yet
-been imported into this repo.
+[`labels/complete-extension-td-v1/labels_results.tsv`](labels/complete-extension-td-v1/labels_results.tsv)
+contains exact complete-extension probabilities under the constellation model
+for 7,202 instances. The other 4,798 rows have status `not_run`. Solver
+provenance and limits are in
+[`labels_settings.json`](labels/complete-extension-td-v1/labels_settings.json).
+The labelled rows cover all 400 replicates for `k = 2, 3, 4` at every listed
+`n`, plus two instances with `k = 5, n = 10`.
+
+Structural statistics for all 12,000 instances and validated decomposition
+widths for the 7,202 solved instances are under [`analysis/solver-td-v1/`](analysis/solver-td-v1/).
 
 ## License and citation
 

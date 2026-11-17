@@ -30,6 +30,8 @@ Dataset names describe the instances. Task and semantics belong to each label ru
 | `analysis_report.md`, `analysis_coverage.tsv`, `analysis_coverage.png` | Tables and coverage figure. |
 | `analysis_report_settings.json` | Report command and input hashes. |
 | `decompositions/` | Validated `.td` files under the analysis run. |
+| `labels_results.tsv` | One row per instance, including exact labels and run status. |
+| `labels_settings.json` | Task, semantics, solver revision, limits and source-log checks. |
 
 TSV files are text tables with tab-separated columns; JSON files store named
 settings. SHA-256 hashes identify file contents so results can be matched to
@@ -38,17 +40,12 @@ same PAFs.
 
 Users choose their own training, validation and test splits.
 
-## Adding solver answers
+## Solver answers
 
-The pilot and main complete-extension runs have finished externally; their
-labels await import. The large run is in progress. For all three datasets:
-
-1. Read the native `.lp` files in `instances/`. Use `extension(...)` as the
-   candidate set; ignore `query(...)` and `%` comments.
-2. Run journal `ver-td-COM` externally for complete-extension probabilities
-   under the constellation model. Solver code and logs stay outside this repo.
-3. Return `labels_results.tsv` and `labels_settings.json` under
-   `labels/complete-extension-td-v1/`.
+Each label run belongs under `labels/<run-name>/`. The included PW24 runs use
+journal `ver-td-COM` for exact complete-extension probabilities under the
+constellation model. Solver code and raw logs stay outside this repository;
+the compact tables record their hashes and provenance.
 
 **Results:** one row per instance, with these columns:
 
@@ -56,19 +53,18 @@ labels await import. The large run is in progress. For all three datasets:
 | --- | --- |
 | `instance_path` | Path relative to the dataset directory. |
 | `instance_sha256` | Copy from `generation_instances.tsv`. |
-| `status` | `ok`, `timeout`, `error` or `invalid_td`. |
+| `status` | `ok`, `not_run`, `timeout`, `memoryout`, `error` or `invalid_td`. |
 | `probability_numerator` | Exact numerator. |
 | `probability_denominator` | Exact positive denominator. |
 | `probability_decimal` | Decimal text derived from the fraction; scientific notation allowed. |
 | `runtime_seconds` | Wall-clock seconds, including HTD. |
+| `cpu_seconds`, `peak_memory_kib` | Resource measurements recorded by the run. |
+| `largest_bag_size`, `decomposition_width` | Checked decomposition measurements, when available. |
+| `source_log`, `source_log_sha256` | External raw-log name and content hash. |
 
-Export the internal fraction, not the solver's printed float. Zero is `0/1`;
-leave probability fields blank on failure. Existing `.td` certificates are
-not direct inputs to this solver's traversal parser.
-
-**Settings:** use `task="extension_verification"`, `semantics="complete"` and
-`arithmetic="rational"`. Record the solver revision, command, Python/packages,
-HTD settings and time/memory limits.
+Zero is `0/1`; probability fields are blank unless `status` is `ok`. A dataset
+may contain both labelled and `not_run` rows so the original instance set does
+not need to be split. Training exports should select only `status=ok` rows.
 
 Keep results for other semantics in separate label runs.
 

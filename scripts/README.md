@@ -3,6 +3,27 @@
 These scripts support PAFs. See the [complete workflow](../README.md#generating-and-measuring-a-paf-dataset)
 for generation and environment setup. Run commands from the repository root.
 
+## Import exact solver results
+
+`import_solver_logs.py` converts raw `ver-td-COM` logs into compact benchmark
+labels. It also imports and validates the decompositions saved in those logs,
+so the same pass can create the structural statistics for a dataset.
+
+```bash
+python3 scripts/import_solver_logs.py datasets/paf-pw24-main-v1 \
+  --logs /path/to/results_pw24_main_v1/ver-td-COM \
+  --analysis-run solver-td-v1 \
+  --solver-repository https://github.com/andreipopi/probabilistic-argumentation-algorithms.git \
+  --solver-commit <commit> \
+  --time-limit-seconds 600 \
+  --memory-limit-mib 8192
+```
+
+The output is `labels/complete-extension-td-v1/`; structural measurements go
+to `analysis/solver-td-v1/`. Existing output directories are never replaced.
+Instances without a corresponding log remain in the label table with status
+`not_run`. See [dataset files and label columns](../datasets/README.md).
+
 ## Measure the graphs
 
 Requires Python 3 and a compiled HTD executable for your computer. Use the

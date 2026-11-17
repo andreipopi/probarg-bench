@@ -1,0 +1,2 @@
+family	instances	analyzed	arguments	directed_attacks	candidate_size	empty_candidates	weak_components	decomposition_width	valid_widths	other_width_statuses
+grid_100	12000	12000	4–120	4–303	0–11	4486	1	2–5	7202	not_run=4798
