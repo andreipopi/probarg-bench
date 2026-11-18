@@ -27,28 +27,59 @@ Users choose their own training, validation and test splits.
 
 ## Benchmark task
 
-An abstract argumentation framework is a directed graph `F = (A, R)` of
-arguments and attacks. An argumentation semantics `sigma` assigns a collection
-of extensions to each framework.
+The terminology follows Definitions 1–3 and 6–7 of the
+[KR 2024 paper](https://doi.org/10.24963/kr.2024/55).
 
-In a probabilistic argumentation framework (PAF) under the independent
-constellation model, arguments and attacks have existence probabilities. A
-possible framework `F'` is obtained by sampling arguments independently and
-then sampling, also independently, the attacks whose endpoints are present.
-Probabilistic extension verification asks,
-for a candidate set `S`, for
+### Argumentation frameworks and semantics
 
-```text
-PEXT_sigma(P, S) = sum over F' of Pr(F') * 1[S is a sigma-extension of F'].
-```
+An **argumentation framework (AF)** is a pair $F=(A,R)$, where $A$ is a finite
+set of arguments and $R\subseteq A\times A$ is the attack relation. An
+argumentation semantics $\sigma$ assigns to $F$ a collection of extensions
+$\sigma(F)\subseteq 2^A$.
 
-Under complete semantics, an extension is conflict-free, defends all its
-members, and contains every argument it defends. The grounded extension is the
-unique complete extension that is least under set inclusion. The current PW24
-label run uses complete semantics.
-In the native files, `extension(a).` identifies members of `S`. The separate
-`query(a).` fact belongs to an acceptance task and is not used for extension
-verification. Exact labels are probabilities between zero and one.
+For a set $S\subseteq A$:
+
+- **Conflict-free:** no arguments $a,b\in S$ satisfy $(a,b)\in R$.
+- **Defense:** $S$ defends $a$ if every attacker $b$ of $a$ is itself attacked
+  by some $c\in S$.
+- **Complete:** $S$ is conflict-free, defends every argument in $S$, and
+  contains every argument it defends.
+- **Grounded:** $S$ is complete and no strict subset of $S$ is complete. Every
+  AF has a unique grounded extension.
+
+### Probabilistic argumentation
+
+A **probabilistic argumentation framework (PAF)** is a triple
+$\mathcal{P}=(A,R,P)$, where $(A,R)$ is an AF and $P$ is a probability
+distribution over its subframeworks. A subframework $F'=(A',R')$ has
+$A'\subseteq A$ and $R'\subseteq R\cap(A'\times A')$; the set of all such
+subframeworks is denoted by $\mathcal{F}(F)$. Under the independent constellation
+model, $P$ is determined by independent marginal probabilities of arguments
+and attacks. An attack can occur only when both of its endpoints are present.
+
+### Probabilistic extension verification
+
+Given a candidate set $S\subseteq A$ and a semantics $\sigma$, its probability
+of being a $\sigma$-extension is
+
+$$
+P^{\mathrm{ext}}_{\sigma}(S)
+=
+\sum_{\substack{F'\in\mathcal{F}(F) \\
+                 S\in\sigma(F')}} P(F').
+$$
+
+Thus, $P^{\mathrm{ext}}_{\sigma}(S)$ is the sum of the probabilities of
+exactly those subframeworks in which $S$ is a $\sigma$-extension. The current
+PW24 label run uses complete semantics and therefore records
+$P^{\mathrm{ext}}_{\mathrm{com}}(S)$.
+
+### Native encoding
+
+| Fact | Meaning for this benchmark task |
+| --- | --- |
+| `extension(a).` | $a$ belongs to the candidate set $S$. |
+| `query(a).` | Query for the separate probabilistic-acceptance task; ignored for extension verification. |
 
 ## Repository layout
 
