@@ -62,12 +62,10 @@ and attacks. An attack can occur only when both of its endpoints are present.
 Given a candidate set $S\subseteq A$ and a semantics $\sigma$, its probability
 of being a $\sigma$-extension is
 
-$$
+```math
 P^{\mathrm{ext}}_{\sigma}(S)
-=
-\sum_{\substack{F'\in\mathcal{F}(F) \\
-                 S\in\sigma(F')}} P(F').
-$$
+= \sum_{\substack{F'\in\mathcal{F}(F) \\ S\in\sigma(F')}} P(F').
+```
 
 Thus, $P^{\mathrm{ext}}_{\sigma}(S)$ is the sum of the probabilities of
 exactly those subframeworks in which $S$ is a $\sigma$-extension. The current
