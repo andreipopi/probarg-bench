@@ -45,4 +45,7 @@ uncertainty about exact numeric representations.>
 
 ## License and citation
 
-<Dataset license and citation for this dataset and its source publication.>
+Dataset instances, labels and measurements are available under the
+[Creative Commons Attribution 4.0 International License](../../LICENSE-DATA).
+Repository code is available under the [MIT License](../../LICENSE).
+Cite the source publication above.

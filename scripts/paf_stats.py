@@ -229,7 +229,7 @@ def main():
     parser.add_argument("--htd", type=Path, help="HTD executable; omit for structural statistics only")
     parser.add_argument("--htd-args", default="", help="quoted arguments for stock HTD; custom research binary needs none")
     parser.add_argument("--timeout", type=float, default=60, help="wall-clock limit per instance")
-    parser.add_argument("--limit", type=int, help="analyze a small prefix for a pilot")
+    parser.add_argument("--limit", type=int, help="analyze only a small prefix for a quick check")
     args = parser.parse_args()
     if args.timeout <= 0 or (args.limit is not None and args.limit < 1):
         parser.error("timeout and limit must be positive")

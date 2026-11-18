@@ -2,7 +2,7 @@
 
 These files are preserved from `paf-ver-acc-journal-experiments` commit
 `699275f093cc4c68c688d93c8f3ac10635be3a30` to document the historical
-generator variants. The pilot, main and large datasets use `PW24-generator.py`.
+generator variants. The main and large datasets use `PW24-generator.py`.
 
 These copies document the original generator settings:
 

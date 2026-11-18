@@ -153,8 +153,11 @@ Replicates are separately generated instances for each `(k, n)` pair.
 
 ## License and citation
 
-The original code's MIT notice is retained in `generators/LICENSE-{spec['generator'].split('-')[0]}-source`
-in ProbArgBench. State the dataset license before publication and cite the source paper above.
+Dataset instances, labels and measurements are available under the
+Creative Commons Attribution 4.0 International License in `LICENSE-DATA`.
+Repository code is available under the MIT License in `LICENSE`; the original
+source notice is retained in `generators/LICENSE-{spec['generator'].split('-')[0]}-source`.
+Cite the source paper above.
 """
 
 

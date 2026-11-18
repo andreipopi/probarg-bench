@@ -36,16 +36,8 @@ direction selection, probability weights and candidate selection.
 
 ## Running the generators
 
-Run from the repository root. For the 300-instance PAF pilot:
-
-```bash
-python3 generators/PW24-generator.py \
-  --output datasets/paf-pw24-pilot-v1 \
-  --k 2 3 4 5 6 \
-  --n 2 3 5 10 15 20 \
-  --replicates 10 \
-  --seed 20261105
-```
+Run from the repository root. The generators refuse to replace an existing
+output directory.
 
 | Option | Meaning |
 | --- | --- |
@@ -56,11 +48,8 @@ python3 generators/PW24-generator.py \
 | `--connection-probability` | PW24 only: `0.75` (original default) or `1` (every neighbouring grid pair connected). |
 | `--dry-run` | Preview the instance count without writing files. |
 
-The example lists 5 values for `k` and 6 for `n`, giving 30 `(k, n)` pairs.
-With 10 replicates for each pair, it creates `30 × 10 = 300` files. Each file
-has `k × n` arguments, between 4 and 120 in this example. Every file gets its
-own seed, so adding more combinations preserves existing instances.
-Reproduction requires the same code and Python version.
+Every file gets its own seed, so adding parameter combinations preserves
+existing instances. Reproduction requires the same code and Python version.
 
 ### Main dataset: 100% grid connections
 

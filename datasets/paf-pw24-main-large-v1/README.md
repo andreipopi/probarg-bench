@@ -53,5 +53,8 @@ Results have not yet been imported into this repo.
 
 ## License and citation
 
-The original code's MIT notice is retained in `generators/LICENSE-PW24-source`
-in ProbArgBench. State the dataset license before publication and cite the source paper above.
+Dataset instances, labels and measurements are available under the
+[Creative Commons Attribution 4.0 International License](../../LICENSE-DATA).
+Repository code is available under the [MIT License](../../LICENSE); the
+original generator notice is retained in `generators/LICENSE-PW24-source`.
+Cite the source paper above.

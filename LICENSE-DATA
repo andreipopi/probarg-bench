@@ -1,0 +1,16 @@
+ProbArgBench Data License
+
+Copyright (c) 2026 Andrei Popescu
+
+The dataset instances, labels, measurements and generation records in the
+`datasets/` directory are licensed under the Creative Commons Attribution 4.0
+International License (CC BY 4.0).
+
+License deed and legal code:
+https://creativecommons.org/licenses/by/4.0/
+
+When reusing this material, provide attribution to ProbArgBench and cite the
+source publication identified in the corresponding dataset README.
+
+This data license does not replace the separate licenses and copyright notices
+that apply to repository code or original generator source files.

@@ -97,22 +97,21 @@ Run them from the repository root.
 
 ```bash
 python3 generators/PW24-generator.py \
-  --output datasets/paf-pw24-pilot-v1 \
+  --output datasets/paf-pw24-main-v1-reproduction \
   --k 2 3 4 5 6 \
   --n 2 3 5 10 15 20 \
-  --replicates 10 \
-  --seed 20261105
+  --replicates 400 \
+  --seed 20261106 \
+  --connection-probability 1
 ```
 
 The command lists 5 values for `k` and 6 values for `n`, giving 30 `(k, n)`
-combinations. It generates 10 separately seeded instances for each combination:
-`30 × 10 = 300` files in total. An individual instance has `k × n` arguments,
-from `2 × 2 = 4` to `6 × 20 = 120`. The default uses the original 75%
-grid-connection probability.
-Use a new output directory; append `--dry-run` to preview the count.
+combinations. It generates 400 separately seeded instances for each combination:
+`30 × 400 = 12,000` files in total, with 4–120 arguments. The command uses the
+main dataset's 100% grid-connection setting. Use a new output directory;
+existing directories are refused. Append `--dry-run` to preview the count.
 See [generator options and formats](generators/README.md).
 
-For the main dataset, use the [12,000-instance command with 100% grid connections](generators/README.md#main-dataset-100-grid-connections).
 The [large extension](generators/README.md#large-extension) contains instances
 with up to 1,000 arguments.
 
@@ -123,13 +122,13 @@ Set `HTD_BIN` to a compiled HTD executable for your computer:
 ```bash
 HTD_BIN="/absolute/path/to/htd_main"
 
-python3 scripts/paf_stats.py datasets/paf-pw24-pilot-v1 \
-  --output datasets/paf-pw24-pilot-v1/analysis/htd-v1 \
+python3 scripts/paf_stats.py datasets/paf-pw24-main-v1 \
+  --output datasets/paf-pw24-main-v1/analysis/htd-local-v1 \
   --htd "$HTD_BIN" \
   --timeout 60
 ```
 
-Open `analysis/htd-v1/analysis_summary.md` afterward. The script saves graph
+Open `analysis/htd-local-v1/analysis_summary.md` afterward. The script saves graph
 counts, validated decompositions and settings. Widths are upper bounds on
 treewidth. Use a new analysis directory for each measurement run.
 See [HTD options and output files](scripts/README.md), including stock HTD
@@ -145,8 +144,8 @@ python3 -m venv .venv
 ```
 
 ```bash
-.venv/bin/python scripts/paf_report.py datasets/paf-pw24-pilot-v1 \
-  --analysis analysis/htd-v1 \
+.venv/bin/python scripts/paf_report.py datasets/paf-pw24-main-v1 \
+  --analysis analysis/htd-local-v1 \
   --plot \
   --update-readme
 ```
@@ -171,10 +170,8 @@ and reports still need to be added.
 
 | Dataset | Instances | Arguments | Grid connections | Label run |
 | --- | ---: | --- | --- | --- |
-| [`paf-pw24-pilot-v1`](datasets/paf-pw24-pilot-v1/) | 300 | 4–120 | 75% | 300 complete-extension probabilities |
 | [`paf-pw24-main-v1`](datasets/paf-pw24-main-v1/) | 12,000 | 4–120 | 100% | 7,202 complete-extension probabilities |
-| [`paf-pw24-main-large-v1`](datasets/paf-pw24-main-large-v1/) | 9,541 | 50–1,000 | 100% | Labelling in progress externally |
-| [`paf-pw24-main-large-unlabelled-v1`](datasets/paf-pw24-main-large-unlabelled-v1/) | 4,859 | 50–1,000 | 100% | Unlabelled after solver cutoff |
+| Large generation: [`retained`](datasets/paf-pw24-main-large-v1/) + [`unlabelled`](datasets/paf-pw24-main-large-unlabelled-v1/) | 14,400 | 50–1,000 | 100% | 9,541 retained; 4,859 without labels |
 
 See [dataset files and formats](datasets/README.md) for the directory structure.
 
@@ -194,5 +191,8 @@ SAFA 2026, CEUR Workshop Proceedings 4262, pp. 2–12.
 
 ## License and citation
 
-Code and dataset licenses will be stated before the first release. Cite the
+Repository code is available under the [MIT License](LICENSE). Dataset
+instances, labels and measurements are available under the
+[Creative Commons Attribution 4.0 International License](LICENSE-DATA).
+The original generator notices are retained under `generators/`. Cite the
 source paper listed in each dataset README.

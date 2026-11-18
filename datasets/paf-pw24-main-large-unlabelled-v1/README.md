@@ -12,3 +12,11 @@ Successful runs from those sizes remain in the labelled-candidate dataset.
 `instances/` and `instances_asp/` contain the two encodings.
 `generation_instances.tsv` preserves each instance's seed and hashes;
 `generation_settings.json` preserves the original generation provenance.
+
+## License and citation
+
+Dataset instances and generation records are available under the
+[Creative Commons Attribution 4.0 International License](../../LICENSE-DATA).
+Repository code is available under the [MIT License](../../LICENSE); the
+original generator notice is retained in `generators/LICENSE-PW24-source`.
+Cite the KR 2024 source paper linked from the retained large dataset.

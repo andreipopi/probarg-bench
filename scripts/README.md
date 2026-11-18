@@ -33,8 +33,8 @@ Replace the example executable path:
 ```bash
 HTD_BIN="/absolute/path/to/htd_main"
 
-python3 scripts/paf_stats.py datasets/paf-pw24-pilot-v1 \
-  --output datasets/paf-pw24-pilot-v1/analysis/htd-v1 \
+python3 scripts/paf_stats.py datasets/paf-pw24-main-v1 \
+  --output datasets/paf-pw24-main-v1/analysis/htd-local-v1 \
   --htd "$HTD_BIN" \
   --timeout 60
 ```
@@ -50,8 +50,8 @@ and computes and checks decompositions. The timeout applies per HTD call.
 For counts without HTD:
 
 ```bash
-python3 scripts/paf_stats.py datasets/paf-pw24-pilot-v1 \
-  --output datasets/paf-pw24-pilot-v1/analysis/structure-v1
+python3 scripts/paf_stats.py datasets/paf-pw24-main-v1 \
+  --output datasets/paf-pw24-main-v1/analysis/structure-local-v1
 ```
 
 | Output | Contents |
@@ -75,8 +75,8 @@ without an optimality proof. Generator `k` is a separate parameter.
 Requires Matplotlib for `--plot`:
 
 ```bash
-.venv/bin/python scripts/paf_report.py datasets/paf-pw24-pilot-v1 \
-  --analysis analysis/htd-v1 --plot --update-readme
+.venv/bin/python scripts/paf_report.py datasets/paf-pw24-main-v1 \
+  --analysis analysis/solver-td-v1 --plot --update-readme
 ```
 
 The report reads family parameters and measurements, checks counts and file
@@ -103,7 +103,7 @@ to its [native JSON format](https://github.com/aig-hagen/AgonProject/blob/dev/do
 
 ```bash
 python3 scripts/paf_to_agon.py \
-  datasets/paf-pw24-pilot-v1/instances/grid_075/k2_n2_qa1_1.lp \
+  datasets/paf-pw24-main-v1/instances/grid_100/k2_n2_qa1_1.lp \
   --output /tmp/example-paf.json
 ```
 
