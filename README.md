@@ -1,9 +1,9 @@
 # ProbArgBench
 
-ProbArgBench is an open benchmark collection for probabilistic argumentation.
-It publishes graph instances in their native formats and the generators that
-produce them. Reference labels from exact solvers are stored with a dataset
-when they are available.
+ProbArgBench is an open benchmark collection for probabilistic argumentation,
+with graph instances of varying size and controlled treewidth. It publishes
+instances in their native formats, the generators that produce them, and
+reference labels from exact solvers when they are available.
 
 The provided generators use the original code accompanying:
 
